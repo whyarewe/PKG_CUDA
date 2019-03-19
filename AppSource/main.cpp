@@ -1,9 +1,9 @@
-#include "CUDASystemInformation.h"
-#include "CUDAEssentials.h"
-
-#include <vector>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <vector>
+
+#include "CUDASystemInformation.h"
+#include "CUDAEssentials.h"
 
 namespace
 {
@@ -31,7 +31,7 @@ namespace
 	sf::Image constructImageFromeVector(const std::vector<float> &vec, int xAxisBound, int yAxisBound)
 	{
 		sf::Image board;
-		board.create(600, 600, sf::Color::Black);
+		board.create(xAxisBound, yAxisBound, sf::Color::Black);
 		for (int i = 1; i < yAxisBound - 1; ++i)
 		{
 			for (int j = 1; j < xAxisBound - 1; j++)
@@ -94,7 +94,6 @@ int main()
 			sprite.setTexture(texture, true);
 		}
 	
-
 		mainWindow.clear();
 		mainWindow.draw(sprite);
 		mainWindow.display();
