@@ -79,13 +79,15 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="CUDAEssentials.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CUDAEssentials.h" />
     <ClInclude Include="CUDASystemInformation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

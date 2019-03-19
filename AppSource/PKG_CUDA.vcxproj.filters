@@ -9,12 +9,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu">
-      <Filter>source</Filter>
-    </CudaCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="CUDASystemInformation.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDAEssentials.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -22,5 +20,13 @@
     <ClCompile Include="CUDASystemInformation.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="CUDAEssentials.cu">
+      <Filter>source</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
