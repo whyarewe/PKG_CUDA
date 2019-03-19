@@ -7,7 +7,8 @@
 
 namespace
 {
-	struct Entity {
+	struct Entity
+	{
 		int x;
 		int y;
 	};
@@ -18,7 +19,7 @@ namespace
 		{
 			for (int j = 1; j < xAxisBound - 1; j++)
 			{
-				if (j != heater.x && i != heater.y)
+				if (j != heater.x || i != heater.y)
 				{
 					vec[i*xAxisBound + j] = 0.25f * (vec[i*xAxisBound + j - 1] + vec[i*xAxisBound + j + 1]
 						+ vec[i*xAxisBound + j + yAxisBound] + vec[i*xAxisBound + j - yAxisBound]);
@@ -70,25 +71,29 @@ int main()
 	while (mainWindow.isOpen())
 	{
 		sf::Event event;
+
 		while (mainWindow.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				mainWindow.close();
+			}
 		}
 
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
-			std::cout << "Mouse position ( x: " << mousePositon.x << ", y: " << mousePositon.y << " )" << std::endl;
+		sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
+		
+		if (mousePositon.x > 1 && mousePositon.x < xAxisBound && mousePositon.y > 1 && mousePositon.y < yAxisBound)
+		{
 			heater.x = mousePositon.x;
 			heater.y = mousePositon.y;
 			model[heater.y * xAxisBound + heater.x] = 255.f;
+			laplace(model, xAxisBound, yAxisBound, heater);
+
+			board = constructImageFromeVector(model, xAxisBound, yAxisBound);
+			texture.loadFromImage(board);
+			sprite.setTexture(texture, true);
 		}
-
-		laplace(model, xAxisBound, yAxisBound, heater);
-
-		board = constructImageFromeVector(model, xAxisBound, yAxisBound);
-		texture.loadFromImage(board);
-		sprite.setTexture(texture, true);
+	
 
 		mainWindow.clear();
 		mainWindow.draw(sprite);

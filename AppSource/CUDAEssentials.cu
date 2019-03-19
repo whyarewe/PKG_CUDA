@@ -1,3 +1,4 @@
+#include "CUDAUtils.h"
 #include "CUDAEssentials.h"
 
 using namespace CUDAHelpers;
@@ -19,9 +20,9 @@ __global__ void kernel(RGB *img, int width, int height)
 void CUDAEssentials::generateImage(RGB *image, int width, int height)
 {
 	RGB *gc_img = nullptr;
-	cudaMalloc(&gc_img, width * height * sizeof(RGB));
+	VALID(cudaMalloc(&gc_img, width * height * sizeof(RGB)));
 	kernel <<<dim3(width / 16 + 1, height / 32 + 1), dim3(16, 32)>>> (gc_img, width, height);
-	cudaMemcpy(image, gc_img, width * height * sizeof(RGB), cudaMemcpyDeviceToHost);
+	VALID(cudaMemcpy(image, gc_img, width * height * sizeof(RGB), cudaMemcpyDeviceToHost));
 }
 
 void CUDAEssentials::writeP6_PPM(const char * filename, RGB * pixelData, int width, int height)
