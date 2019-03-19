@@ -21,14 +21,14 @@ namespace
 			{
 				if (j != heater.x || i != heater.y)
 				{
-					vec[i*xAxisBound + j] = 0.25f * (vec[i*xAxisBound + j - 1] + vec[i*xAxisBound + j + 1]
-						+ vec[i*xAxisBound + j + yAxisBound] + vec[i*xAxisBound + j - yAxisBound]);
+					vec[i*xAxisBound + j] = (0.255f * (vec[i*xAxisBound + j - 1] + vec[i*xAxisBound + j + 1]
+						+ vec[i*xAxisBound + j + yAxisBound] + vec[i*xAxisBound + j - yAxisBound]));
 				}
 			}
 		}
 	}
 
-	sf::Image constructImageFromeVector(const std::vector<float> &vec, int xAxisBound, int yAxisBound)
+	sf::Image constructImageFromVector(const std::vector<float> &vec, int xAxisBound, int yAxisBound, Entity heater)
 	{
 		sf::Image board;
 		board.create(xAxisBound, yAxisBound, sf::Color::Black);
@@ -36,7 +36,7 @@ namespace
 		{
 			for (int j = 1; j < xAxisBound - 1; j++)
 			{
-				sf::Color pixelColor = sf::Color((uint8_t)vec[i*xAxisBound + j], 0, 0);
+				sf::Color pixelColor = sf::Color(static_cast<int>(vec[i*xAxisBound + j]) % 255, 0, 0);
 				board.setPixel(j, i, pixelColor);
 			}
 		}
@@ -87,18 +87,18 @@ int main()
 			heater.x = mousePositon.x;
 			heater.y = mousePositon.y;
 			model[heater.y * xAxisBound + heater.x] = 255.f;
+
 			laplace(model, xAxisBound, yAxisBound, heater);
 
-			board = constructImageFromeVector(model, xAxisBound, yAxisBound);
+			board = constructImageFromVector(model, xAxisBound, yAxisBound, heater);
 			texture.loadFromImage(board);
 			sprite.setTexture(texture, true);
 		}
-	
+		
 		mainWindow.clear();
 		mainWindow.draw(sprite);
 		mainWindow.display();
 	}
-
-
+	
 	return 0;
 }

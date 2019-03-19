@@ -8,8 +8,8 @@ namespace CUDAHelpers {
 	void VALID(T expression) {
 		if (cudaSuccess != expression)
 		{
-				std::cerr << "CUDA error at line " << __LINE__ << ": " << cudaGetErrorString(expression) << std::endl;
-				std::exit(1); 
+			std::cerr << "CUDA error at line " << __LINE__ << ": " << cudaGetErrorString(expression) << std::endl;
+			std::exit(1);
 		}
 	}
 }

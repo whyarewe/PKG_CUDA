@@ -8,7 +8,8 @@ __global__ void kernel(RGB *img, int width, int height)
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (idx >= width || idy >= height) {
+	if (idx >= width || idy >= height)
+	{
 		return;
 	}
 
