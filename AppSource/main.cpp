@@ -1,23 +1,100 @@
 #include "CUDASystemInformation.h"
+#include "CUDAEssentials.h"
 
-typedef struct {
-	uint8_t R;
-	uint8_t G;
-	uint8_t B;
-} RGB;
+#include <vector>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
+namespace
+{
+	struct Entity {
+		int x;
+		int y;
+	};
+
+	void laplace(std::vector<float> &vec, int xAxisBound, int yAxisBound, Entity heater)
+	{
+		for (int i = 1; i < yAxisBound - 1; ++i)
+		{
+			for (int j = 1; j < xAxisBound - 1; j++)
+			{
+				if (j != heater.x && i != heater.y)
+				{
+					vec[i*xAxisBound + j] = 0.25f * (vec[i*xAxisBound + j - 1] + vec[i*xAxisBound + j + 1]
+						+ vec[i*xAxisBound + j + yAxisBound] + vec[i*xAxisBound + j - yAxisBound]);
+				}
+			}
+		}
+	}
+
+	sf::Image constructImageFromeVector(const std::vector<float> &vec, int xAxisBound, int yAxisBound)
+	{
+		sf::Image board;
+		board.create(600, 600, sf::Color::Black);
+		for (int i = 1; i < yAxisBound - 1; ++i)
+		{
+			for (int j = 1; j < xAxisBound - 1; j++)
+			{
+				sf::Color pixelColor = sf::Color((uint8_t)vec[i*xAxisBound + j], 0, 0);
+				board.setPixel(j, i, pixelColor);
+			}
+		}
+		return board;
+	}
+}
 
 int main()
 {
 	CUDAHelpers::CUDASystemInformation systemInformations;
 	systemInformations.displaySystemDevicesProperites();
+	int xAxisBound = 600;
+	int yAxisBound = 600;
 
-	int width = 500;
-	int height = 500;
-	RGB *img = new RGB[width*height];
+	sf::RenderWindow mainWindow(sf::VideoMode(xAxisBound, yAxisBound), "PKG_CUDA", sf::Style::Titlebar | sf::Style::Close);
+	mainWindow.setFramerateLimit(60);
 
-	//generateImage(img, width, height);
-	//writeP6_PPM("output.ppm", img, width, height);
+	Entity heater;
+
+	std::vector<float> model;
+	model.reserve(xAxisBound * yAxisBound);
+
+	sf::Image board;
+	board.create(xAxisBound, yAxisBound, sf::Color::Black);
+
+	sf::Texture texture;
+	texture.loadFromImage(board);
+
+	sf::Sprite sprite;
+	sprite.setTexture(texture, true);
+
+	while (mainWindow.isOpen())
+	{
+		sf::Event event;
+		while (mainWindow.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				mainWindow.close();
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
+			std::cout << "Mouse position ( x: " << mousePositon.x << ", y: " << mousePositon.y << " )" << std::endl;
+			heater.x = mousePositon.x;
+			heater.y = mousePositon.y;
+			model[heater.y * xAxisBound + heater.x] = 255.f;
+		}
+
+		laplace(model, xAxisBound, yAxisBound, heater);
+
+		board = constructImageFromeVector(model, xAxisBound, yAxisBound);
+		texture.loadFromImage(board);
+		sprite.setTexture(texture, true);
+
+		mainWindow.clear();
+		mainWindow.draw(sprite);
+		mainWindow.display();
+	}
+
 
 	return 0;
 }
