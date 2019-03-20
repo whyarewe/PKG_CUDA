@@ -85,9 +85,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="CUDAEssentials.cu" />
+    <CudaCompile Include="CUDALaplacePropagation.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CUDAEssentials.h" />
+    <ClInclude Include="CUDALaplacePropagation.h" />
     <ClInclude Include="CUDASystemInformation.h" />
     <ClInclude Include="CUDAUtils.h" />
   </ItemGroup>
