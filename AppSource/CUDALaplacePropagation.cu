@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include "CUDALaplacePropagation.h"
 #include "CUDAUtils.h"
 
@@ -5,8 +7,8 @@ using namespace CUDAHelpers;
 
 __global__ void kernel(float *data, float *outData, int xAxisBound, int yAxisBound, int xHeaterPos, int yHeaterPos)
 {
-	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
-	const int idy = blockIdx.y * blockDim.y + threadIdx.y;
+	const uint16_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+	const uint16_t idy = blockIdx.y * blockDim.y + threadIdx.y;
 
 	const int gid = idy * yAxisBound + idx;
 
