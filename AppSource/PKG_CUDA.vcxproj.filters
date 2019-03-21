@@ -18,6 +18,9 @@
     <ClInclude Include="CUDAUtils.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="CUDALaplacePropagation.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp">
@@ -29,6 +32,9 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CUDAEssentials.cu">
+      <Filter>source</Filter>
+    </CudaCompile>
+    <CudaCompile Include="CUDALaplacePropagation.cu">
       <Filter>source</Filter>
     </CudaCompile>
   </ItemGroup>
