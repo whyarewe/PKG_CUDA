@@ -9,5 +9,5 @@
 
 namespace CUDALaplacePropagation
 {
-	void propagate( std::vector<float> &vec, int xAxisBound, int yAxisBound, int xHeaterPos, int yHeaterPos );
+	void propagate(std::vector<float> &vec, int xAxisBound, int yAxisBound, int xHeaterPos, int yHeaterPos);
 };

@@ -12,13 +12,13 @@
     <ClInclude Include="CUDASystemInformation.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="CUDAEssentials.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="CUDAUtils.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="CUDALaplacePropagation.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,11 +29,11 @@
     <ClCompile Include="main.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="CUDAEssentials.cu">
-      <Filter>source</Filter>
-    </CudaCompile>
     <CudaCompile Include="CUDALaplacePropagation.cu">
       <Filter>source</Filter>
     </CudaCompile>
