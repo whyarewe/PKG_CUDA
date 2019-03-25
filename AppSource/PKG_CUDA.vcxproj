@@ -84,17 +84,17 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="CUDAEssentials.cu" />
     <CudaCompile Include="CUDALaplacePropagation.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CUDAEssentials.h" />
     <ClInclude Include="CUDALaplacePropagation.h" />
     <ClInclude Include="CUDASystemInformation.h" />
     <ClInclude Include="CUDAUtils.h" />
+    <ClInclude Include="Entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
