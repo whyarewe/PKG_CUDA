@@ -27,13 +27,12 @@ void Entity::setRadius(uint32_t radius)
 }
 
 Entity::Entity(Coordinates coordinates, uint16_t radius) :
-	coordinates_(coordinates), radius_(radius) 
+	coordinates_(coordinates), radius_(radius)
 {
 
 }
 
 Entity::Entity(uint32_t x, uint32_t y, uint16_t radius) :
-	radius_(radius)
+	radius_(radius), coordinates_(x, y)
 {
-	coordinates_ = Coordinates(x, y);	
 }

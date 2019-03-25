@@ -126,12 +126,24 @@ int main()
 		std::exit(0);
 	}
 
+	sf::Text heaters;
 	sf::Text radius;
-	radius.setFont(font);
+
+	heaters.setFont(font);
+	radius.setFont(font);	
+
 	radius.setCharacterSize(20);
+	heaters.setCharacterSize(20);
+	
 	radius.setFillColor(sf::Color::White);
-	radius.move(xAxisBound - 180, 15);
+	heaters.setFillColor(sf::Color::White);
+	
+	radius.move(xAxisBound - 180, 30);
+	heaters.move(xAxisBound - 180, 10);
+	
+	std::string heatersCount("Heater Count  : " + std::to_string(swarm.size()));
 	std::string heaterRadius("Heater Radius : " + std::to_string(entityRadius));
+	heaters.setString(heatersCount.c_str());
 	radius.setString(heaterRadius.c_str());
 
 	while (mainWindow.isOpen())
@@ -144,8 +156,27 @@ int main()
 			{
 				mainWindow.close();
 			}
+			else if (event.type == sf::Event::MouseButtonPressed)
+			{
+				if (event.mouseButton.button == sf::Mouse::Left) 
+				{
+					sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
+
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+						uint32_t x = mousePositon.x;
+						uint32_t y = mousePositon.y;
+
+						if (x > 1 && x < xAxisBound && y > 1 && y < yAxisBound)
+						{
+							swarm.push_back(Entity(x, y, entityRadius));
+							std::string heatersCount("Heater Count  : " + std::to_string(swarm.size()));
+							heaters.setString(heatersCount.c_str());
+						}
+					}
+				}
+			}
 			else if (event.type == sf::Event::EventType::KeyPressed) {
-				if (event.key.code == sf::Keyboard::Up)
+			    if (event.key.code == sf::Keyboard::Up)
 				{
 					entityRadius = entityRadius > 20 ? entityRadius : entityRadius += 2;
 					std::string heaterRadius("Heater Radius : " + std::to_string(entityRadius));
@@ -157,21 +188,15 @@ int main()
 					std::string heaterRadius("Heater Radius : " + std::to_string(entityRadius));
 					radius.setString(heaterRadius.c_str());
 				}
+				else if (event.key.code == sf::Keyboard::BackSpace)
+				{
+					swarm.erase(swarm.begin());
+					std::string heatersCount("Heater Count  : " + std::to_string(swarm.size()));
+					heaters.setString(heatersCount.c_str());
+				}
 			}
 		}
-
-		sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
-
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-			uint32_t x = mousePositon.x;
-			uint32_t y = mousePositon.y;
-
-			if (x > 1 && x < xAxisBound && y > 1 && y < yAxisBound)
-			{
-				swarm.push_back(Entity(x, y, entityRadius));
-			}
-		}
-   		 
+		
 		for (const auto& entity : swarm) {
 			uint32_t leftBorder = entity.getCoordinates().getX() - entity.getRadius();
 			uint32_t rightBorder = entity.getCoordinates().getX() + entity.getRadius();
@@ -200,8 +225,9 @@ int main()
 		mainWindow.clear();
 		mainWindow.draw(sprite);
 		mainWindow.draw(radius);
+		mainWindow.draw(heaters);
 		mainWindow.display();
 	}
-	   
+
 	return 0;
 }
