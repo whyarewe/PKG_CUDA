@@ -4,36 +4,36 @@ using namespace CUDAHelpers;
 
 CUDASystemInformation::CUDASystemInformation()
 {
-	cudaGetDeviceCount(&this->_deviceCount);
-	for (uint8_t deviceIndex = 0; deviceIndex < this->_deviceCount; ++deviceIndex)
+	cudaGetDeviceCount(&this->device_count_);
+	for (uint8_t device_index = 0; device_index < this->device_count_; ++device_index)
 	{
-		cudaDeviceProp properties;
-		cudaGetDeviceProperties(&properties, deviceIndex);
-		this->_devices.emplace(std::string(properties.name), properties);
+		cudaDeviceProp properties{};
+		cudaGetDeviceProperties(&properties, device_index);
+		this->devices_.emplace(std::string(properties.name), properties);
 	}
 }
 
-int CUDASystemInformation::getNumberOfDevices() const
+auto CUDASystemInformation::getNumberOfDevices() const -> int
 {
-	return this->_deviceCount;
+	return this->device_count_;
 }
 
-cudaDeviceProp CUDASystemInformation::getDeviceProperties(std::string name) const
+auto CUDASystemInformation::getDeviceProperties(const std::string& name) const -> cudaDeviceProp
 {
-	return this->_devices.at(name);
+	return this->devices_.at(name);
 }
 
-void CUDASystemInformation::displaySystemDevicesProperites() const
+auto CUDASystemInformation::displaySystemDevicesProperties() const -> void
 {
-	std::stringstream result = getDevicesPropertiesAsFormattedText();
+	auto result = getDevicesPropertiesAsFormattedText();
 	std::cout << result.str();
 }
 
-std::stringstream CUDASystemInformation::getDevicesPropertiesAsFormattedText() const
+auto CUDASystemInformation::getDevicesPropertiesAsFormattedText() const -> std::stringstream
 {
 	std::stringstream result;
 
-	for each (const auto &device in _devices)
+	for (const auto &device : devices_)
 	{
 		result << device.first << std::endl;
 		result << "|  Compute capability: " << device.second.major << "." << device.second.minor << std::endl;
