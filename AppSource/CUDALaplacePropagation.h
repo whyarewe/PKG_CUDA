@@ -1,27 +1,28 @@
 #pragma once
 
-#include <cstdio>
-#include <cstdint>
 #include <vector>
-
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
 #include "Entity.h"
 
-struct ComputingData {
-	std::vector<float>& board;
-	int xAxisBound;
-	int yAxisBound;
-	Entity::EntityContainer swarm;
-};
+namespace CUDAHelpers {
+	struct ComputingData {
+		std::vector<float>& board;
+		int x_axis_bound;
+		int y_axis_bound;
+		Entity::EntityContainer swarm;
+	};
 
-class CUDAPropagation
-{
-public:
-	enum class Device {CPU, GPU};
-	static void laplace(ComputingData data, Device device);
+	class CUDAPropagation
+	{
+	public:
+		enum class Device { CPU, GPU };
+		static void laplace(ComputingData data, Device device);
 
-private:
-	static void laplace_cpu(std::vector<float> &vec, int xAxisBound, int yAxisBound, Entity::EntityContainer swarm);
-	static void laplace_gpu(std::vector<float> &vec, int xAxisBound, int yAxisBound, int xHeaterPos, int yHeaterPos);
-};
+	private:
+		static auto laplace_cpu(std::vector<float>& vec, int x_axis_bound, int y_axis_bound,
+		                       Entity::EntityContainer swarm) -> void;
+
+		static auto laplace_gpu(std::vector<float>& vec, int x_axis_bound, int y_axis_bound, int x_heater_pos,
+		                        int y_heater_pos) -> void;
+	};
+}
+

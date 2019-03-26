@@ -5,25 +5,7 @@
 
 using namespace CUDAHelpers;
 
-__global__ void kernel(float *data, float *outData, int xAxisBound, int yAxisBound, int xHeaterPos, int yHeaterPos)
-{
-	const uint16_t idx = blockIdx.x * blockDim.x + threadIdx.x;
-	const uint16_t idy = blockIdx.y * blockDim.y + threadIdx.y;
-
-	const int gid = idy * yAxisBound + idx;
-
-	if (idx > xAxisBound || idy > yAxisBound)
-	{
-		return;
-	}
-
-	if (idy != xHeaterPos || idx != yHeaterPos)
-	{
-		outData[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + yAxisBound] + data[gid - yAxisBound]);
-	}
-}
-
-void CUDAPropagation::laplace(ComputingData data, Device device)
+auto CUDAPropagation::laplace(ComputingData data, const Device device) -> void
 {
 	if (Device::GPU == device)
 	{
@@ -31,56 +13,76 @@ void CUDAPropagation::laplace(ComputingData data, Device device)
 	}
 	else if (Device::CPU == device)
 	{
-		laplace_cpu(data.board, data.xAxisBound, data.yAxisBound, data.swarm);
+		laplace_cpu(data.board, data.x_axis_bound, data.y_axis_bound, data.swarm);
 	}
 }
 
-void CUDAPropagation::laplace_cpu(std::vector<float>& vec, int xAxisBound, int yAxisBound, Entity::EntityContainer swarm)
+__global__ void kernel(float *data, float *out_data, const int x_axis_bound, const int y_axis_bound, const int x_heater_pos, const int y_heater_pos)
 {
-	bool isUnderEntity = false;
+	const uint16_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+	const uint16_t idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-	for (int i = 1; i < yAxisBound - 1; ++i)
+	const auto gid = idy * y_axis_bound + idx;
+
+	if (idx > x_axis_bound || idy > y_axis_bound)
 	{
-		for (int j = 1; j < xAxisBound - 1; j++)
+		return;
+	}
+
+	if (idy != x_heater_pos || idx != y_heater_pos)
+	{
+		out_data[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + y_axis_bound] + data[gid - y_axis_bound]);
+	}
+}
+
+auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const int x_axis_bound, const int y_axis_bound,
+                                  Entity::EntityContainer swarm) -> void
+{
+	auto is_under_entity = false;
+
+	for (auto i = 1; i < y_axis_bound - 1; ++i)
+	{
+		for (auto j = 1; j < x_axis_bound - 1; j++)
 		{
 			for (const auto& entity : swarm) {
-				uint32_t leftBorder = entity.getCoordinates().getX() - entity.getRadius();
-				uint32_t rightBorder = entity.getCoordinates().getX() + entity.getRadius();
-				uint32_t topBorder = entity.getCoordinates().getY() - entity.getRadius();
-				uint32_t bottomBorder = entity.getCoordinates().getY() + entity.getRadius();
+				const auto left_border = entity.getCoordinates().getX() - entity.getRadius();
+				const auto right_border = entity.getCoordinates().getX() + entity.getRadius();
+				const auto top_border = entity.getCoordinates().getY() - entity.getRadius();
+				const auto bottom_border = entity.getCoordinates().getY() + entity.getRadius();
 
-				if (i >= topBorder && i <= bottomBorder && j >= rightBorder && j <= leftBorder)
+				if (i >= top_border && i <= bottom_border && j >= right_border && j <= left_border)
 				{
-					isUnderEntity = true;
+					is_under_entity = true;
 				}
 			}
 
-			if (!isUnderEntity)
+			if (!is_under_entity)
 			{
-				vec[i*xAxisBound + j] = (0.25f * (vec[i*xAxisBound + j - 1] + vec[i*xAxisBound + j + 1]
-					+ vec[i*xAxisBound + j + yAxisBound] + vec[i*xAxisBound + j - yAxisBound]));
+				vec[i*x_axis_bound + j] = (0.25f * (vec[i*x_axis_bound + j - 1] + vec[i*x_axis_bound + j + 1]
+					+ vec[i*x_axis_bound + j + y_axis_bound] + vec[i*x_axis_bound + j - y_axis_bound]));
 			}
 		}
 	}
 }
 
-void CUDAPropagation::laplace_gpu(std::vector<float> &vec, int xAxisBound, int yAxisBound, int xHeaterPos, int yHeaterPos)
+auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const int x_axis_bound, const int y_axis_bound,
+                                  const int x_heater_pos, const int y_heater_pos) -> void
 {
 	float *data = nullptr;
-	float *outData = nullptr;
-	VALID(cudaMalloc(&data, xAxisBound * yAxisBound * sizeof(float)));
-	VALID(cudaMalloc(&outData, xAxisBound * yAxisBound * sizeof(float)));
+	float *out_data = nullptr;
+	VALID(cudaMalloc(&data, x_axis_bound * y_axis_bound * sizeof(float)));
+	VALID(cudaMalloc(&out_data, x_axis_bound * y_axis_bound * sizeof(float)));
 
-	VALID(cudaMemcpy(data, vec.data(), xAxisBound * yAxisBound * sizeof(float), cudaMemcpyHostToDevice));
+	VALID(cudaMemcpy(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 
 	dim3 block(16, 16);
 	dim3 grid(38, 38);
 
-	kernel << <grid, block >> > (data, outData, xAxisBound, yAxisBound, xHeaterPos, yHeaterPos);
+	kernel << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound, x_heater_pos, y_heater_pos);
 
-	VALID(cudaMemcpy(vec.data(), outData, xAxisBound * yAxisBound * sizeof(float), cudaMemcpyDeviceToHost));
+	VALID(cudaMemcpy(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
 
 	cudaFree(data);
-	cudaFree(outData);
+	cudaFree(out_data);
 }
 

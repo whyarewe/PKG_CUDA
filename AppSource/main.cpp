@@ -15,84 +15,81 @@ namespace
 		return 255.0605 + (0.02909945 - 255.0605) / std::pow((1 + std::pow((2 * x / 68872.05), 2.133224)), 13205500);
 	}
 
-	double G(float x)
+	auto G(const float x) -> double
 	{
-		return 10 + 6.109578*x*1.2 - 0.2057529*x*x + 0.002335796*x*x*x - 0.00001016682*x*x*x*x + 1.514604e-8*x*x*x*x*x;
+		return 10 + 6.109578 * x * 1.2 - 0.2057529 * x * x + 0.002335796 * x * x * x - 0.00001016682 * x * x * x * x +
+			1.514604e-8 * x * x * x * x * x;
 	}
 
-	double B(float x)
+	auto B(const float x) -> double
 	{
-		return 10 + 3.000859*x - 0.09096409*x*x + 0.0006806883*x*x*x * 2 - 0.000001399089*x*x*x*x;
+		return 10 + 3.000859 * x - 0.09096409 * x * x + 0.0006806883 * x * x * x * 2 - 0.000001399089 * x * x * x * x;
 	}
 
-	sf::Image constructImageFromVector(const std::vector<float> &vec, int xAxisBound, int yAxisBound)
+	auto construct_image_from_vector(const std::vector<float>& vec, const uint32_t x_axis_bound,
+	                                 const uint32_t y_axis_bound) -> sf::Image
 	{
 		sf::Image board;
-		board.create(xAxisBound, yAxisBound, sf::Color::Black);
-		for (int i = 1; i < yAxisBound - 1; ++i)
+		board.create(x_axis_bound, y_axis_bound, sf::Color::Black);
+		for (uint32_t i = 1; i < y_axis_bound - 1; ++i)
 		{
-			for (int j = 1; j < xAxisBound - 1; j++)
+			for (uint32_t j = 1; j < x_axis_bound - 1; j++)
 			{
-				sf::Color pixelColor = sf::Color(
-					R(vec[i*xAxisBound + j]),
-					G(vec[i*xAxisBound + j]),
-					B(vec[i*xAxisBound + j])
-				);
+				auto pixel_color = sf::Color(
+					static_cast<uint8_t>(R(vec[i * x_axis_bound + j])),
+					static_cast<uint8_t>(G(vec[i * x_axis_bound + j])),
+						static_cast<uint8_t>(B(vec[i * x_axis_bound + j])));
 
-				if (vec[i*xAxisBound + j] > 125.f) {
-					pixelColor = sf::Color::White;
+				if (vec[i * x_axis_bound + j] > 125.f)
+				{
+					pixel_color = sf::Color::White;
 				}
-				else if (vec[i*xAxisBound + j] < 0.1f) {
-					pixelColor = sf::Color(
-						(vec[i*xAxisBound + j]),
-						(vec[i*xAxisBound + j]),
-						(vec[i*xAxisBound + j])
-					);
-				}
-				board.setPixel(j, i, pixelColor);
+
+				board.setPixel(j, i, pixel_color);
 			}
 		}
 		return board;
 	}
 
-	std::string getexepath()
+	std::string getExePath()
 	{
 		char result[MAX_PATH];
-		return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
+		return std::string(result, GetModuleFileName(nullptr, result, MAX_PATH));
 	}
 }
 
 int main()
 {
-	CUDAHelpers::CUDASystemInformation systemInformations;
-	systemInformations.displaySystemDevicesProperites();
-	int xAxisBound = 600;
-	int yAxisBound = 600;
+	CUDAHelpers::CUDASystemInformation system_information;
+	system_information.displaySystemDevicesProperites();
+	uint32_t x_axis_bound = 600;
+	uint32_t y_axis_bound = 600;
 
 	sf::ContextSettings setting;
 	setting.antialiasingLevel = 8;
-	sf::RenderWindow mainWindow(sf::VideoMode(xAxisBound, yAxisBound), "PKG_CUDA", sf::Style::Titlebar | sf::Style::Close);
-	mainWindow.setFramerateLimit(60);
+	sf::RenderWindow main_window(sf::VideoMode(x_axis_bound, y_axis_bound), "PKG_CUDA",
+	                             sf::Style::Titlebar | sf::Style::Close);
+	main_window.setFramerateLimit(60);
 
 	Entity::EntityContainer swarm;
-	uint32_t entityRadius = 1;
+	uint32_t entity_radius = 1;
 
 	std::vector<float> model;
-	model.reserve(xAxisBound * yAxisBound);
+	model.reserve(x_axis_bound * y_axis_bound);
 
 	sf::Image board;
-	board.create(xAxisBound, yAxisBound, sf::Color::Black);
+	board.create(x_axis_bound, y_axis_bound, sf::Color::Black);
 
 	sf::Texture texture;
 	texture.loadFromImage(board);
 
 	sf::Sprite sprite;
 	sprite.setTexture(texture, true);
-	std::string fontPath = getexepath();
-	fontPath.resize(fontPath.size() - 12);
-	fontPath += "FontFile.ttf";
+	auto font_path = getExePath();
+	font_path.resize(font_path.size() - 12);
+	font_path += "FontFile.ttf";
 	sf::Font font;
-	if (!font.loadFromFile(fontPath))
+	if (!font.loadFromFile(font_path))
 	{
 		std::exit(0);
 	}
@@ -101,130 +98,136 @@ int main()
 	sf::Text radius;
 
 	heaters.setFont(font);
-	radius.setFont(font);	
+	radius.setFont(font);
 
 	radius.setCharacterSize(20);
 	heaters.setCharacterSize(20);
-	
+
 	radius.setFillColor(sf::Color::White);
 	heaters.setFillColor(sf::Color::White);
-	
-	radius.move(xAxisBound - 180, 30);
-	heaters.move(xAxisBound - 180, 10);
-	
-	std::string heatersCount("Heater Count  : " + std::to_string(swarm.size()));
-	std::string heaterRadius("Heater Radius : " + std::to_string(entityRadius));
-	heaters.setString(heatersCount.c_str());
-	radius.setString(heaterRadius.c_str());
 
-	while (mainWindow.isOpen())
+	radius.move(x_axis_bound - 180, 30);
+	heaters.move(x_axis_bound - 180, 10);
+
+	auto heaters_count("Heater Count  : " + std::to_string(swarm.size()));
+	auto heater_radius("Heater Radius : " + std::to_string(entity_radius));
+
+	heaters.setString(heaters_count.c_str());
+	radius.setString(heater_radius.c_str());
+
+	while (main_window.isOpen())
 	{
-		sf::Event event;
+		sf::Event event{};
 
-		while (mainWindow.pollEvent(event))
+		while (main_window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 			{
-				mainWindow.close();
+				main_window.close();
 			}
 			else if (event.type == sf::Event::MouseButtonPressed)
 			{
-				if (event.mouseButton.button == sf::Mouse::Left) 
+				if (event.mouseButton.button == sf::Mouse::Left)
 				{
-					sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
+					auto mouse_position = sf::Mouse::getPosition(main_window);
 
-					if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-						uint32_t x = mousePositon.x;
-						uint32_t y = mousePositon.y;
+					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+					{
+						uint32_t x = mouse_position.x;
+						uint32_t y = mouse_position.y;
 
-						if (x > 1 && x < xAxisBound && y > 1 && y < yAxisBound)
+						if (x > 1 && x < x_axis_bound && y > 1 && y < y_axis_bound)
 						{
-							swarm.push_back(Entity(x, y, entityRadius));
-							std::string heatersCount("Heater Count  : " + std::to_string(swarm.size()));
-							heaters.setString(heatersCount.c_str());
+							swarm.push_back(Entity(x, y, entity_radius));
+							auto heaters_count_str("Heater Count  : " + std::to_string(swarm.size()));
+							heaters.setString(heaters_count_str.c_str());
 						}
 					}
 				}
 			}
-			else if (event.type == sf::Event::EventType::KeyPressed) {
-			    if (event.key.code == sf::Keyboard::Up)
+			else if (event.type == sf::Event::EventType::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Up)
 				{
-					entityRadius = entityRadius > 20 ? entityRadius : entityRadius += 2;
-					std::string heaterRadius("Heater Radius : " + std::to_string(entityRadius));
-					radius.setString(heaterRadius.c_str());
+					entity_radius = entity_radius > 20 ? entity_radius : entity_radius += 2;
+					auto heater_radius_str("Heater Radius : " + std::to_string(entity_radius));
+					radius.setString(heater_radius_str.c_str());
 				}
 				else if (event.key.code == sf::Keyboard::Down)
 				{
-					entityRadius = entityRadius == 1 ? entityRadius : entityRadius -= 2;
-					std::string heaterRadius("Heater Radius : " + std::to_string(entityRadius));
-					radius.setString(heaterRadius.c_str());
+					entity_radius = entity_radius == 1 ? entity_radius : entity_radius -= 2;
+					auto heater_radius_str("Heater Radius : " + std::to_string(entity_radius));
+					radius.setString(heater_radius_str.c_str());
 				}
 				else if (event.key.code == sf::Keyboard::BackSpace)
 				{
 					swarm.erase(swarm.begin());
-					std::string heatersCount("Heater Count  : " + std::to_string(swarm.size()));
-					heaters.setString(heatersCount.c_str());
+					auto heaters_count_str("Heater Count  : " + std::to_string(swarm.size()));
+					heaters.setString(heaters_count_str.c_str());
 				}
 			}
 		}
 
-		sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
+		auto mouse_position = sf::Mouse::getPosition(main_window);
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 		{
-			uint32_t x = mousePositon.x;
-			uint32_t y = mousePositon.y;
+			auto x = mouse_position.x;
+			auto y = mouse_position.y;
 
-			if (x > 1 && x < xAxisBound && y > 1 && y < yAxisBound)
+			if (x > 1 && x < x_axis_bound && y > 1 && y < y_axis_bound)
 			{
-				uint32_t leftBorder = x - entityRadius;
-				uint32_t rightBorder = x + entityRadius;
-				uint32_t topBorder = y - entityRadius;
-				uint32_t bottomBorder = y + entityRadius;
+				auto left_border = x - entity_radius;
+				auto right_border = x + entity_radius;
+				auto top_border = y - entity_radius;
+				auto bottom_border = y + entity_radius;
 
-				leftBorder = leftBorder <= 1 ? 1 : leftBorder;
-				rightBorder = rightBorder >= xAxisBound ? rightBorder - 1 : rightBorder;
-				topBorder = topBorder <= 1 ? 1 : topBorder;
-				bottomBorder = bottomBorder >= yAxisBound ? yAxisBound - 1 : bottomBorder;
+				left_border = left_border <= 1 ? 1 : left_border;
+				right_border = right_border >= x_axis_bound ? right_border - 1 : right_border;
+				top_border = top_border <= 1 ? 1 : top_border;
+				bottom_border = bottom_border >= y_axis_bound ? y_axis_bound - 1 : bottom_border;
 
-				for (int i = topBorder; i < bottomBorder; ++i) {
-					for (int j = leftBorder; j < rightBorder; ++j)
+				for (auto i = top_border; i < bottom_border; ++i)
+				{
+					for (auto j = left_border; j < right_border; ++j)
 					{
-						model[i * xAxisBound + j] = 255.f;
+						model[i * x_axis_bound + j] = 255.f;
 					}
 				}
 			}
 		}
-		
-		for (const auto& entity : swarm) {
-			uint32_t leftBorder = entity.getCoordinates().getX() - entity.getRadius();
-			uint32_t rightBorder = entity.getCoordinates().getX() + entity.getRadius();
-			uint32_t topBorder = entity.getCoordinates().getY() - entity.getRadius();
-			uint32_t bottomBorder = entity.getCoordinates().getY() + entity.getRadius();
 
-			leftBorder = leftBorder <= 1 ? 1 : leftBorder;
-			rightBorder = rightBorder >= xAxisBound ? rightBorder - 1 : rightBorder;
-			topBorder = topBorder <= 1 ? 1 : topBorder;
-			bottomBorder = bottomBorder >= yAxisBound ? yAxisBound - 1 : bottomBorder;
+		for (const auto& entity : swarm)
+		{
+			auto left_border = entity.getCoordinates().getX() - entity.getRadius();
+			auto right_border = entity.getCoordinates().getX() + entity.getRadius();
+			auto top_border = entity.getCoordinates().getY() - entity.getRadius();
+			auto bottom_border = entity.getCoordinates().getY() + entity.getRadius();
 
-			for (int i = topBorder; i < bottomBorder; ++i) {
-				for (int j = leftBorder; j < rightBorder; ++j)
+			left_border = left_border <= 1 ? 1 : left_border;
+			right_border = right_border >= x_axis_bound ? right_border - 1 : right_border;
+			top_border = top_border <= 1 ? 1 : top_border;
+			bottom_border = bottom_border >= y_axis_bound ? y_axis_bound - 1 : bottom_border;
+
+			for (auto i = top_border; i < bottom_border; ++i)
+			{
+				for (auto j = left_border; j < right_border; ++j)
 				{
-					model[i * xAxisBound + j] = 255.f;
+					model[i * x_axis_bound + j] = 255.f;
 				}
 			}
 		}
-		ComputingData current_board_context	{model,	xAxisBound,	yAxisBound,	swarm };
-		CUDAPropagation::laplace(current_board_context, CUDAPropagation::Device::CPU);
-		board = constructImageFromVector(model, xAxisBound, yAxisBound);
+		CUDAHelpers::ComputingData current_board_context{model, x_axis_bound, y_axis_bound, swarm};
+		CUDAHelpers::CUDAPropagation::laplace(current_board_context, CUDAHelpers::CUDAPropagation::Device::CPU);
+		board = construct_image_from_vector(model, x_axis_bound, y_axis_bound);
 		texture.loadFromImage(board);
 		sprite.setTexture(texture, true);
 
-		mainWindow.clear();
-		mainWindow.draw(sprite);
-		mainWindow.draw(radius);
-		mainWindow.draw(heaters);
-		mainWindow.display();
+		main_window.clear();
+		main_window.draw(sprite);
+		main_window.draw(radius);
+		main_window.draw(heaters);
+		main_window.display();
 	}
 
 	return 0;

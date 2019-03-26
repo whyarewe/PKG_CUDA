@@ -1,11 +1,10 @@
 #pragma once
 
-#include <iostream>
 #include <map>
+#include <iostream>
 #include <string>
 #include <sstream>
 #include "cuda_runtime.h"
-#include "device_launch_parameters.h"
 
 namespace CUDAHelpers
 {
@@ -14,15 +13,15 @@ namespace CUDAHelpers
 	public:
 		using SystemDevices = std::map<std::string, cudaDeviceProp>;
 
-		int getNumberOfDevices() const;
-		void displaySystemDevicesProperites() const;
-		cudaDeviceProp getDeviceProperties(std::string) const;
+		auto getNumberOfDevices() const -> int;
+		auto displaySystemDevicesPropertites() const -> void;
+		auto getDeviceProperties(const std::string&) const -> cudaDeviceProp;
 		CUDASystemInformation();
 
 	private:
-		int _deviceCount = 0;
-		SystemDevices _devices;
-		std::stringstream getDevicesPropertiesAsFormattedText() const;
+		int device_count_ = 0;
+		SystemDevices devices_;
+		auto getDevicesPropertiesAsFormattedText() const -> std::stringstream;
 	};
 };
 

@@ -9,12 +9,12 @@ private:
 	uint32_t y_;
 public: 
 	Coordinates() = default;
-	Coordinates(uint32_t x, uint32_t y) : x_(x), y_(y) {};
+	Coordinates(const uint32_t x, const uint32_t y) : x_(x), y_(y) {};
 
-	uint32_t getX() const { return x_; }
-	uint32_t getY() const { return y_; }
-	void setX(uint32_t x) { x_ = x; }
-	void setY(uint32_t y) { y_ = y; }
+	auto getX() const -> uint32_t { return x_; }
+	auto getY() const -> uint32_t { return y_; }
+	auto setX(const uint32_t x) -> void { x_ = x; }
+	auto setY(const uint32_t y) -> void { y_ = y; }
 
 	~Coordinates() = default;
 };
@@ -27,11 +27,11 @@ private:
 public:
 	using EntityContainer = std::vector<Entity>;
 
-	Coordinates getCoordinates() const;
-	uint32_t getRadius() const;
-	void setCoordinates(uint32_t x, uint32_t y);
-	void setCoordinates(Coordinates coordinates);
-	void setRadius(uint32_t radius);
+	auto getCoordinates() const -> Coordinates;
+	auto getRadius() const -> uint32_t;
+	auto setCoordinates(uint32_t x, uint32_t y) -> void;
+	auto setCoordinates(Coordinates coordinates) -> void;
+	auto setRadius(uint32_t radius) -> void;
 
 	Entity() = delete;
 	explicit Entity(Coordinates coordinates, uint16_t radius = 1);
