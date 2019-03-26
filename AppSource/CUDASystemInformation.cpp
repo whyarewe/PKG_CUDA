@@ -18,12 +18,12 @@ auto CUDASystemInformation::getNumberOfDevices() const -> int
 	return this->device_count_;
 }
 
-auto CUDASystemInformation::getDeviceProperties(const std::string name) const -> cudaDeviceProp
+auto CUDASystemInformation::getDeviceProperties(const std::string& name) const -> cudaDeviceProp
 {
 	return this->devices_.at(name);
 }
 
-auto CUDASystemInformation::displaySystemDevicesProperites() const -> void
+auto CUDASystemInformation::displaySystemDevicesProperties() const -> void
 {
 	auto result = getDevicesPropertiesAsFormattedText();
 	std::cout << result.str();

@@ -14,7 +14,7 @@ namespace CUDAHelpers
 		using SystemDevices = std::map<std::string, cudaDeviceProp>;
 
 		auto getNumberOfDevices() const -> int;
-		auto displaySystemDevicesPropertites() const -> void;
+		auto displaySystemDevicesProperties() const -> void;
 		auto getDeviceProperties(const std::string&) const -> cudaDeviceProp;
 		CUDASystemInformation();
 

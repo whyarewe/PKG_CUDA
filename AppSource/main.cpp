@@ -61,7 +61,7 @@ namespace
 int main()
 {
 	CUDAHelpers::CUDASystemInformation system_information;
-	system_information.displaySystemDevicesProperites();
+	system_information.displaySystemDevicesProperties();
 	uint32_t x_axis_bound = 600;
 	uint32_t y_axis_bound = 600;
 
