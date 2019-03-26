@@ -5,10 +5,10 @@ using namespace CUDAHelpers;
 CUDASystemInformation::CUDASystemInformation()
 {
 	cudaGetDeviceCount(&this->device_count_);
-	for (uint8_t deviceIndex = 0; deviceIndex < this->device_count_; ++deviceIndex)
+	for (uint8_t device_index = 0; device_index < this->device_count_; ++device_index)
 	{
 		cudaDeviceProp properties{};
-		cudaGetDeviceProperties(&properties, deviceIndex);
+		cudaGetDeviceProperties(&properties, device_index);
 		this->devices_.emplace(std::string(properties.name), properties);
 	}
 }
@@ -33,7 +33,7 @@ auto CUDASystemInformation::getDevicesPropertiesAsFormattedText() const -> std::
 {
 	std::stringstream result;
 
-	for each (const auto &device in devices_)
+	for (const auto &device : devices_)
 	{
 		result << device.first << std::endl;
 		result << "|  Compute capability: " << device.second.major << "." << device.second.minor << std::endl;
