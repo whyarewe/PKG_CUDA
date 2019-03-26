@@ -8,7 +8,6 @@
 #include "CUDALaplacePropagation.h"
 #include "Entity.h"
 
-
 namespace
 {
 	double R(float x)
@@ -24,36 +23,6 @@ namespace
 	double B(float x)
 	{
 		return 10 + 3.000859*x - 0.09096409*x*x + 0.0006806883*x*x*x * 2 - 0.000001399089*x*x*x*x;
-	}
-
-
-	void laplace(std::vector<float> &vec, int xAxisBound, int yAxisBound, Entity::EntityContainer swarm)
-	{
-		bool isUnderEntity = false;
-
-		for (int i = 1; i < yAxisBound - 1; ++i)
-		{
-			for (int j = 1; j < xAxisBound - 1; j++)
-			{
-				for (const auto& entity : swarm) {
-					uint32_t leftBorder = entity.getCoordinates().getX() - entity.getRadius();
-					uint32_t rightBorder = entity.getCoordinates().getX() + entity.getRadius();
-					uint32_t topBorder = entity.getCoordinates().getY() - entity.getRadius();
-					uint32_t bottomBorder = entity.getCoordinates().getY() + entity.getRadius();
-
-					if (i >= topBorder && i <= bottomBorder && j >= rightBorder && j <= leftBorder)
-					{
-						isUnderEntity = true;
-					}
-				}
-
-				if (!isUnderEntity)
-				{
-					vec[i*xAxisBound + j] = (0.25f * (vec[i*xAxisBound + j - 1] + vec[i*xAxisBound + j + 1]
-						+ vec[i*xAxisBound + j + yAxisBound] + vec[i*xAxisBound + j - yAxisBound]));
-				}
-			}
-		}
 	}
 
 	sf::Image constructImageFromVector(const std::vector<float> &vec, int xAxisBound, int yAxisBound)
@@ -100,6 +69,8 @@ int main()
 	int xAxisBound = 600;
 	int yAxisBound = 600;
 
+	sf::ContextSettings setting;
+	setting.antialiasingLevel = 8;
 	sf::RenderWindow mainWindow(sf::VideoMode(xAxisBound, yAxisBound), "PKG_CUDA", sf::Style::Titlebar | sf::Style::Close);
 	mainWindow.setFramerateLimit(60);
 
@@ -196,6 +167,34 @@ int main()
 				}
 			}
 		}
+
+		sf::Vector2i mousePositon = sf::Mouse::getPosition(mainWindow);
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+		{
+			uint32_t x = mousePositon.x;
+			uint32_t y = mousePositon.y;
+
+			if (x > 1 && x < xAxisBound && y > 1 && y < yAxisBound)
+			{
+				uint32_t leftBorder = x - entityRadius;
+				uint32_t rightBorder = x + entityRadius;
+				uint32_t topBorder = y - entityRadius;
+				uint32_t bottomBorder = y + entityRadius;
+
+				leftBorder = leftBorder <= 1 ? 1 : leftBorder;
+				rightBorder = rightBorder >= xAxisBound ? rightBorder - 1 : rightBorder;
+				topBorder = topBorder <= 1 ? 1 : topBorder;
+				bottomBorder = bottomBorder >= yAxisBound ? yAxisBound - 1 : bottomBorder;
+
+				for (int i = topBorder; i < bottomBorder; ++i) {
+					for (int j = leftBorder; j < rightBorder; ++j)
+					{
+						model[i * xAxisBound + j] = 255.f;
+					}
+				}
+			}
+		}
 		
 		for (const auto& entity : swarm) {
 			uint32_t leftBorder = entity.getCoordinates().getX() - entity.getRadius();
@@ -215,9 +214,8 @@ int main()
 				}
 			}
 		}
-
-		laplace(model, xAxisBound, yAxisBound, swarm);
-		//CUDALaplacePropagation::propagate(model, xAxisBound, yAxisBound, heater.x, heater.y);	//GPU
+		ComputingData current_board_context	{model,	xAxisBound,	yAxisBound,	swarm };
+		CUDAPropagation::laplace(current_board_context, CUDAPropagation::Device::CPU);
 		board = constructImageFromVector(model, xAxisBound, yAxisBound);
 		texture.loadFromImage(board);
 		sprite.setTexture(texture, true);
