@@ -7,6 +7,9 @@
     <Filter Include="headers">
       <UniqueIdentifier>{2b858ece-6bd4-4e4e-8e2d-0cd0408e47c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="headers\Interface">
+      <UniqueIdentifier>{cb6bb29f-2694-419f-b25a-aaad2a6fbcbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CUDASystemInformation.h">
@@ -21,6 +24,18 @@
     <ClInclude Include="Entity.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="IWindow.h">
+      <Filter>headers\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>headers\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp">
@@ -30,6 +45,12 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

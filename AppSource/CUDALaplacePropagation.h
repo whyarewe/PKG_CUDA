@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+
 #include "Entity.h"
 
 namespace CUDAHelpers {
