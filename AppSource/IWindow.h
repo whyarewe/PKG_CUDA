@@ -4,6 +4,8 @@
 #include "Config.h"
 #include "SFML/Window.hpp"
 #include <SFML/Graphics/Drawable.hpp>
+#include "CUDALaplacePropagation.h"
+#include <SFML/Graphics/Image.hpp>
 
 namespace CoreUtils
 {
@@ -36,6 +38,9 @@ namespace CoreUtils
 		virtual auto setStyle(WindowStyles) -> void = 0;
 
 		virtual auto getMousePosition() const->sf::Vector2i = 0;
+		virtual auto calculateView(const CUDAHelpers::ComputingData&) -> void = 0;
+		virtual auto constructImageFromVector(const CUDAHelpers::ComputingData&) const->sf::Image = 0;
+		virtual auto setActive(bool) const -> void = 0;
 
 		virtual ~IWindow() = default;
 	};
