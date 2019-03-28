@@ -1,38 +1,14 @@
 #include "Entity.h"
 
-auto Entity::getCoordinates() const -> Coordinates
+auto Entity::getDimensions() const -> EntityDimensions
 {
-	return coordinates_;
+	return dimensions_;
 }
 
-auto Entity::getRadius() const -> uint32_t
-{
-	return radius_;
-}
-
-auto Entity::setCoordinates(const uint32_t x, const uint32_t y) -> void
-{
-	coordinates_.setX(x);
-	coordinates_.setY(y);
-}
-
-auto Entity::setCoordinates(const Coordinates coordinates) -> void
-{
-	coordinates_ = coordinates;
-}
-
-auto Entity::setRadius(const uint32_t radius) -> void
-{
-	radius_ = radius;
-}
-
-Entity::Entity(const Coordinates coordinates, const uint16_t radius) :
-	coordinates_(coordinates), radius_(radius)
-{
-
-}
-
-Entity::Entity(const uint32_t x, const uint32_t y, const uint16_t radius) :
-	coordinates_(x, y), radius_(radius)
+Entity::Entity(const uint32_t x, const uint32_t y, const uint32_t radius, const uint32_t x_axis_bound,
+               const uint32_t y_axis_bound) :
+	dimensions_(x, y, radius, x_axis_bound, y_axis_bound)
 {
 }
+
+Entity::~Entity() = default;

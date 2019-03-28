@@ -5,7 +5,7 @@ int main()
 {
 	CUDAHelpers::CUDASystemInformation system_information;
 	system_information.displaySystemDevicesProperties();
-	
+
 	CoreUtils::Engine engine;
 	engine.run();
 

@@ -1,4 +1,6 @@
 #include "Window.h"
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 namespace
 {
@@ -19,7 +21,10 @@ namespace
 	}
 }
 
-CoreUtils::Window::Window(WindowStyles style) : window_style_(style)
+CoreUtils::Window::Window(WindowStyles style) :
+	window_style_(style),
+	heaters_(std::make_unique<sf::Text>()),
+	radius_(std::make_unique<sf::Text>())
 {
 	settings_ = sf::ContextSettings();
 	settings_.antialiasingLevel = Config::StandardWindowSetting::anti_aliasing_level;
@@ -42,18 +47,23 @@ auto CoreUtils::Window::close() -> void
 auto CoreUtils::Window::getWidth() const -> uint32_t
 {
 	if (window_->isOpen()) { return window_->getSize().x; }
-	return  0;
+	return 0;
 }
 
 auto CoreUtils::Window::getHeight() const -> uint32_t
 {
 	if (window_->isOpen()) { return window_->getSize().y; }
-	return  0;
+	return 0;
 }
 
 auto CoreUtils::Window::getStyle() const -> WindowStyles
 {
 	return window_style_;
+}
+
+auto CoreUtils::Window::isWithinWindow(const sf::Vector2i& coordinates) -> bool
+{
+	return (coordinates.x > 1 && coordinates.x < getWidth() && coordinates.y > 1 && coordinates.y < getHeight());
 }
 
 auto CoreUtils::Window::setStyle(const WindowStyles new_style) -> void
@@ -65,12 +75,12 @@ auto CoreUtils::Window::setStyle(const WindowStyles new_style) -> void
 		if (WindowStyles::Resizable == new_style || WindowStyles::NonResizable == new_style)
 		{
 			window_->create(sf::VideoMode(Config::StandardResolution::width, Config::StandardResolution::height),
-				Config::project_name, static_cast<uint32_t>(new_style), settings_);
+			                Config::project_name, static_cast<uint32_t>(new_style), settings_);
 		}
 		else if (WindowStyles::FullScreen == new_style)
 		{
 			window_->create(sf::VideoMode(Config::FullHDResolution::width, Config::FullHDResolution::height),
-				Config::project_name, static_cast<uint32_t>(new_style), settings_);
+			                Config::project_name, static_cast<uint32_t>(new_style), settings_);
 		}
 	}
 }
@@ -80,39 +90,65 @@ auto CoreUtils::Window::getMousePosition() const -> sf::Vector2i
 	return sf::Mouse::getPosition(*window_);
 }
 
-auto CoreUtils::Window::calculateView(const CUDAHelpers::ComputingData& data) -> void
+auto CoreUtils::Window::setSystemFontConfiguration(const sf::Font& font) const -> void
 {
-	if (running_view_)
-	{
-		return;
-	}
+	heaters_->setFont(font);
+	radius_->setFont(font);
 
-	if(view_.joinable())
+	radius_->setCharacterSize(Config::GUI_CONFIG::system_font_size);
+	heaters_->setCharacterSize(Config::GUI_CONFIG::system_font_size);
+
+	radius_->setFillColor(sf::Color::White);
+	heaters_->setFillColor(sf::Color::White);
+}
+
+auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> void
+{
+	if (running_view_) { return; }
+
+	if (view_.joinable())
 	{
 		view_.join();
 	}
 	view_ = std::thread([&]()
 	{
 		running_view_ = true;
-		while (isOpen())
+
+		radius_->move(static_cast<float>(getWidth()) - 110, 30.f);
+		heaters_->move(static_cast<float>(getWidth() - 110), 10.f);
+		sf::Image background_image;
+		background_image.create(data.x_axis_bound, data.y_axis_bound, sf::Color::Black);
+
+		while (isOpen() && !needs_reload_)
 		{
-			const auto background_image = constructImageFromVector(data);
+			constructImageFromVector(background_image, data);
 			sf::Texture background_texture;
 			background_texture.loadFromImage(background_image);
 			sf::Sprite background;
 			background.setTexture(background_texture, true);
+
+			if (update_interface_)
+			{
+				auto heaters_count("Heater Count  : " + std::to_string(data.swarm.size()));
+				auto heater_radius("Heater Radius : " + std::to_string(data.entity_radius));
+				heaters_->setString(heaters_count.c_str());
+				radius_->setString(heater_radius.c_str());
+				update_interface_ = false;
+			}
+
 			clear();
 			draw(&background);
-			display();			
+			draw(radius_.get());
+			draw(heaters_.get());
+			display();
 		}
 		running_view_ = false;
 	});
 }
 
-auto CoreUtils::Window::constructImageFromVector(const CUDAHelpers::ComputingData& data) const -> sf::Image
+auto CoreUtils::Window::constructImageFromVector(sf::Image& background_image,
+                                                 const CUDAHelpers::ComputingData& data) const -> sf::Image
 {
-	sf::Image background_image;
-	background_image.create(data.x_axis_bound, data.y_axis_bound, sf::Color::Black);
 	for (auto i = 1; i < data.y_axis_bound - 1; ++i)
 	{
 		for (auto j = 1; j < data.x_axis_bound - 1; j++)
@@ -151,12 +187,22 @@ auto CoreUtils::Window::draw(sf::Drawable* object) -> void
 auto CoreUtils::Window::pollEvent(sf::Event& event) -> bool
 {
 	if (window_->isOpen()) { return window_->pollEvent(event); }
-	return  false;
+	return false;
 }
 
 auto CoreUtils::Window::display() -> void
 {
 	if (window_->isOpen()) { window_->display(); }
+}
+
+auto CoreUtils::Window::reloadWindow() -> void
+{
+	needs_reload_ = true;
+}
+
+auto CoreUtils::Window::updateInterface() -> void
+{
+	update_interface_ = true;
 }
 
 auto CoreUtils::Window::isOpen() -> bool

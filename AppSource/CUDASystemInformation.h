@@ -1,9 +1,9 @@
 #pragma once
 
 #include <map>
-#include <iostream>
 #include <string>
 #include <sstream>
+#include <iostream>
 #include "cuda_runtime.h"
 
 namespace CUDAHelpers
@@ -24,4 +24,3 @@ namespace CUDAHelpers
 		auto getDevicesPropertiesAsFormattedText() const -> std::stringstream;
 	};
 };
-

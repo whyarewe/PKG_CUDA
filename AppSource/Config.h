@@ -12,7 +12,8 @@ namespace Config
 		static unsigned const height = 1080;
 	};
 
-	namespace StandardResolution {
+	namespace StandardResolution
+	{
 		static unsigned const width = 600;
 		static unsigned const height = 600;
 	};
@@ -21,5 +22,10 @@ namespace Config
 	{
 		static unsigned const frame_rate_limit = 60;
 		static unsigned const anti_aliasing_level = 8;
+	}
+
+	namespace GUI_CONFIG
+	{
+		static unsigned short const system_font_size = 12;
 	}
 }
