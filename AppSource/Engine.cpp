@@ -5,7 +5,6 @@
 #include <iostream>
 
 CoreUtils::Engine::Engine() :
-	window_(std::make_unique<Window>(WindowStyles::NonResizable)),
 	system_font_(std::make_unique<sf::Font>())
 {
 	auto font_path = getExePath();
@@ -15,12 +14,13 @@ CoreUtils::Engine::Engine() :
 	{
 		std::exit(0);
 	}
-	window_->setSystemFontConfiguration(*system_font_);
+	window_ = std::make_unique<Window>(WindowStyles::NonResizable, *system_font_);
 }
 
 auto CoreUtils::Engine::run() -> void
 {
 	uint32_t entity_radius = 1;
+	bool show_controls = false;
 
 	std::vector<float> model;
 	model.reserve(window_->getWidth() * window_->getHeight());
@@ -45,6 +45,8 @@ auto CoreUtils::Engine::run() -> void
 					{
 						swarm_.push_back(Entity(mouse_position.x, mouse_position.y, entity_radius, window_->getWidth(),
 						                        window_->getHeight()));
+
+						window_->getGUI().setHeatersCount(swarm_.size());
 						window_->updateInterface();
 					}
 				}
@@ -55,16 +57,19 @@ auto CoreUtils::Engine::run() -> void
 				{
 				case sf::Keyboard::Up:
 					entity_radius = entity_radius > 20 ? entity_radius : entity_radius += 2;
+					window_->getGUI().setRadius(entity_radius);
 					window_->updateInterface();
 					break;
 				case sf::Keyboard::Down:
 					entity_radius = entity_radius == 1 ? entity_radius : entity_radius -= 2;
+					window_->getGUI().setRadius(entity_radius);
 					window_->updateInterface();
 					break;
 				case sf::Keyboard::BackSpace:
 					if (!swarm_.empty())
 					{
 						swarm_.erase(swarm_.begin());
+						window_->getGUI().setHeatersCount(swarm_.size());
 						window_->updateInterface();
 					}
 					break;
@@ -81,6 +86,10 @@ auto CoreUtils::Engine::run() -> void
 						window_->reloadWindow();
 						break;
 					}
+					break;
+				case sf::Keyboard::I:
+					show_controls = !show_controls;
+					window_->getGUI().setShowControls(show_controls);
 					break;
 				default:
 					break;
@@ -122,11 +131,10 @@ auto CoreUtils::Engine::run() -> void
 			model,
 			window_->getWidth(),
 			window_->getHeight(),
-			entity_radius,
 			swarm_
 		};
 
-		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::CPU);
+		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::GPU);
 
 		window_->generateView(board_context);
 	}

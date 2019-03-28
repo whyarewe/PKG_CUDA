@@ -36,6 +36,9 @@
     <ClInclude Include="Engine.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp">
@@ -51,6 +54,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -10,7 +10,7 @@ auto CUDAPropagation::laplace(ComputingData data, const Device device) -> void
 	switch (device)
 	{
 	case Device::GPU:
-		//laplace_gpu(data.vec,data.xAxisBound, data.yAxisBound)
+		laplace_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
 	case Device::CPU:
 		laplace_cpu(data.board, data.x_axis_bound, data.y_axis_bound, data.swarm);
@@ -21,8 +21,7 @@ auto CUDAPropagation::laplace(ComputingData data, const Device device) -> void
 	}
 }
 
-__global__ void kernel(float* data, float* out_data, const int x_axis_bound, const int y_axis_bound,
-                       const int x_heater_pos, const int y_heater_pos)
+__global__ void kernel(float* data, float* out_data, const int x_axis_bound, const int y_axis_bound)
 {
 	const uint16_t idx = blockIdx.x * blockDim.x + threadIdx.x;
 	const uint16_t idy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -34,10 +33,7 @@ __global__ void kernel(float* data, float* out_data, const int x_axis_bound, con
 		return;
 	}
 
-	if (idy != x_heater_pos || idx != y_heater_pos)
-	{
-		out_data[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + y_axis_bound] + data[gid - y_axis_bound]);
-	}
+	out_data[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + y_axis_bound] + data[gid - y_axis_bound]);
 }
 
 auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const int x_axis_bound, const int y_axis_bound,
@@ -69,8 +65,7 @@ auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const int x_axis_boun
 	}
 }
 
-auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const int x_axis_bound, const int y_axis_bound,
-                                  const int x_heater_pos, const int y_heater_pos) -> void
+auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const int x_axis_bound, const int y_axis_bound) -> void
 {
 	float* data = nullptr;
 	float* out_data = nullptr;
@@ -79,10 +74,10 @@ auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const int x_axis_boun
 
 	VALID(cudaMemcpy(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 
-	dim3 block(16, 16);
-	dim3 grid(38, 38);
+	dim3 block(10, 10);
+	dim3 grid(60, 60);
 
-	kernel << <grid, block >> >(data, out_data, x_axis_bound, y_axis_bound, x_heater_pos, y_heater_pos);
+	kernel << <grid, block >> >(data, out_data, x_axis_bound, y_axis_bound);
 
 	VALID(cudaMemcpy(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
 
