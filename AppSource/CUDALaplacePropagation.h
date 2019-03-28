@@ -11,8 +11,6 @@ namespace CUDAHelpers
 		std::vector<float>& board;
 		int x_axis_bound;
 		int y_axis_bound;
-		int entity_radius;
-		bool show_controls;
 		Entity::EntityContainer swarm;
 	};
 
