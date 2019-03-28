@@ -21,6 +21,7 @@ CoreUtils::Engine::Engine() :
 auto CoreUtils::Engine::run() -> void
 {
 	uint32_t entity_radius = 1;
+	bool show_controls = false;
 
 	std::vector<float> model;
 	model.reserve(window_->getWidth() * window_->getHeight());
@@ -82,6 +83,9 @@ auto CoreUtils::Engine::run() -> void
 						break;
 					}
 					break;
+				case sf::Keyboard::I:
+					show_controls = !show_controls;
+					break;
 				default:
 					break;
 				}
@@ -123,10 +127,11 @@ auto CoreUtils::Engine::run() -> void
 			window_->getWidth(),
 			window_->getHeight(),
 			entity_radius,
+			show_controls,
 			swarm_
 		};
 
-		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::CPU);
+		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::GPU);
 
 		window_->generateView(board_context);
 	}

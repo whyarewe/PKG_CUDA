@@ -22,6 +22,8 @@ namespace CoreUtils
 
 		std::unique_ptr<sf::Text> heaters_;
 		std::unique_ptr<sf::Text> radius_;
+		std::unique_ptr<sf::Text> info_;
+		std::unique_ptr<sf::Text> keybindings_;
 
 	public:
 		explicit Window(WindowStyles);

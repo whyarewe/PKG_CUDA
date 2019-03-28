@@ -24,7 +24,9 @@ namespace
 CoreUtils::Window::Window(WindowStyles style) :
 	window_style_(style),
 	heaters_(std::make_unique<sf::Text>()),
-	radius_(std::make_unique<sf::Text>())
+	radius_(std::make_unique<sf::Text>()),
+	info_(std::make_unique<sf::Text>()),
+	keybindings_(std::make_unique<sf::Text>())
 {
 	settings_ = sf::ContextSettings();
 	settings_.antialiasingLevel = Config::StandardWindowSetting::anti_aliasing_level;
@@ -94,12 +96,18 @@ auto CoreUtils::Window::setSystemFontConfiguration(const sf::Font& font) const -
 {
 	heaters_->setFont(font);
 	radius_->setFont(font);
+	info_->setFont(font);
+	keybindings_->setFont(font);
 
 	radius_->setCharacterSize(Config::GUI_CONFIG::system_font_size);
 	heaters_->setCharacterSize(Config::GUI_CONFIG::system_font_size);
+	info_->setCharacterSize(Config::GUI_CONFIG::system_font_size);
+	keybindings_->setCharacterSize(Config::GUI_CONFIG::system_font_size);
 
 	radius_->setFillColor(sf::Color::White);
 	heaters_->setFillColor(sf::Color::White);
+	info_->setFillColor(sf::Color::White);
+	keybindings_->setFillColor(sf::Color::White);
 }
 
 auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> void
@@ -114,10 +122,22 @@ auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> 
 	{
 		running_view_ = true;
 
-		radius_->move(static_cast<float>(getWidth()) - 110, 30.f);
+		radius_->move(static_cast<float>(getWidth() - 110), 30.f);
 		heaters_->move(static_cast<float>(getWidth() - 110), 10.f);
+		keybindings_->move(5.f, 10.f);
+
 		sf::Image background_image;
 		background_image.create(data.x_axis_bound, data.y_axis_bound, sf::Color::Black);
+
+		std::string info_text("Press 'i' to toggle controls\n");
+		info_->setString(info_text.c_str());
+		std::string keybindings_text("LMB : Spawn heater\n"
+									 "RMB : Draw heaters\n"
+									 "Backspace : Delete heater\n"
+									 "Key Up : Increase radius\n"
+									 "Key Down : Decrase radius\n"
+									 "F11 : Fullscreen mode");
+		keybindings_->setString(keybindings_text.c_str());
 
 		while (isOpen() && !needs_reload_)
 		{
@@ -131,6 +151,7 @@ auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> 
 			{
 				auto heaters_count("Heater Count  : " + std::to_string(data.swarm.size()));
 				auto heater_radius("Heater Radius : " + std::to_string(data.entity_radius));
+
 				heaters_->setString(heaters_count.c_str());
 				radius_->setString(heater_radius.c_str());
 				update_interface_ = false;
@@ -140,6 +161,16 @@ auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> 
 			draw(&background);
 			draw(radius_.get());
 			draw(heaters_.get());
+
+			if (!data.show_controls)
+			{
+				draw(info_.get());
+			}
+			else
+			{
+				draw(keybindings_.get());
+			}
+
 			display();
 		}
 		running_view_ = false;
