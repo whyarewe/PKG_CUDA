@@ -33,7 +33,7 @@ auto CUDASystemInformation::getDevicesPropertiesAsFormattedText() const -> std::
 {
 	std::stringstream result;
 
-	for (const auto &device : devices_)
+	for (const auto& device : devices_)
 	{
 		result << device.first << std::endl;
 		result << "|  Compute capability: " << device.second.major << "." << device.second.minor << std::endl;

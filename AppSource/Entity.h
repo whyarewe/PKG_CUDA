@@ -3,39 +3,62 @@
 #include <cstdint>
 #include <vector>
 
-class Coordinates {	
+class EntityDimensions
+{
 private:
 	uint32_t x_;
 	uint32_t y_;
-public: 
-	Coordinates() = default;
-	Coordinates(const uint32_t x, const uint32_t y) : x_(x), y_(y) {};
+	uint32_t top_border_;
+	uint32_t left_border_;
+	uint32_t right_border_;
+	uint32_t bottom_border_;
+	uint32_t radius_;
+
+public:
+	EntityDimensions() = default;
+
+	EntityDimensions(const uint32_t x, const uint32_t y) : x_(x), y_(y)
+	{
+		radius_ = 1;
+		top_border_ = y - 1;
+		left_border_ = x - 1;
+		right_border_ = x + 1;
+		bottom_border_ = y + 1;
+	};
+
+	EntityDimensions(const uint32_t x, const uint32_t y, const uint32_t radius, const uint32_t x_axis_bound,
+	                 const uint32_t y_axis_bound) : x_(x), y_(y), radius_(radius)
+	{
+		top_border_ = y - radius_;
+		left_border_ = x - radius_;
+		right_border_ = x + radius_;
+		bottom_border_ = y + radius_;
+		top_border_ = top_border_ <= 1 ? 1 : top_border_;
+		left_border_ = left_border_ <= 1 ? 1 : left_border_;
+		right_border_ = right_border_ >= x_axis_bound ? right_border_ - 1 : right_border_;
+		bottom_border_ = bottom_border_ >= y_axis_bound ? bottom_border_ - 1 : bottom_border_;
+	};
 
 	auto getX() const -> uint32_t { return x_; }
 	auto getY() const -> uint32_t { return y_; }
-	auto setX(const uint32_t x) -> void { x_ = x; }
-	auto setY(const uint32_t y) -> void { y_ = y; }
+	auto getTopBorder() const -> uint32_t { return top_border_; }
+	auto getLeftBorder() const -> uint32_t { return left_border_; }
+	auto getRightBorder() const -> uint32_t { return right_border_; }
+	auto getBottomBorder() const -> uint32_t { return bottom_border_; }
 
-	~Coordinates() = default;
+	~EntityDimensions() = default;
 };
 
 class Entity
 {
 private:
-	Coordinates coordinates_;
-	uint32_t radius_;
+	EntityDimensions dimensions_;
 public:
 	using EntityContainer = std::vector<Entity>;
-
-	auto getCoordinates() const -> Coordinates;
-	auto getRadius() const -> uint32_t;
-	auto setCoordinates(uint32_t x, uint32_t y) -> void;
-	auto setCoordinates(Coordinates coordinates) -> void;
-	auto setRadius(uint32_t radius) -> void;
+	auto getDimensions() const -> EntityDimensions;
 
 	Entity() = delete;
-	explicit Entity(Coordinates coordinates, uint16_t radius = 1);
-	Entity(uint32_t x, uint32_t y, uint16_t radius = 1);
-	~Entity() = default;
+	Entity(uint32_t x, uint32_t y, uint32_t radius, uint32_t x_axis_bound,
+	       uint32_t y_axis_bound);
+	~Entity();
 };
-
