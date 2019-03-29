@@ -52,19 +52,16 @@ auto CoreUtils::GUI::setFontConfiguration(const sf::Font& font) const -> void
 auto CoreUtils::GUI::setRadius(uint16_t radius) -> void
 {
 	radius_ = radius;
-	update();
 }
 
 auto CoreUtils::GUI::setHeatersCount(uint16_t heaters_count) -> void
 {
 	heaters_count_ = heaters_count;
-	update();
 }
 
-auto CoreUtils::GUI::setShowControls(bool show_controls) -> void
+auto CoreUtils::GUI::toggleShowControls() -> void
 {
-	show_controls_ = show_controls;
-	update();
+	show_controls_ = !show_controls_;
 }
 
 auto CoreUtils::GUI::update() -> void
