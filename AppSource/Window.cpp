@@ -1,12 +1,13 @@
-#include "Window.h"
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
+
+#include "Window.h"
 
 namespace
 {
 	double R(float x)
 	{
-		return 255.0605 + (0.02909945 - 255.0605) / std::pow((1 + std::pow((2 * x / 68872.05), 2.133224)), 13205500);
+		return 255.0605 + (0.02909945 - 255.0605) / std::pow((1 + std::pow((x / 68872.05), 2.133224)), 13205500);
 	}
 
 	auto G(const float x) -> double

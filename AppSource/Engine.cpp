@@ -1,12 +1,14 @@
 #include <iostream>
+
 #include <SFML/Graphics/Text.hpp>
 
 #include "Engine.h"
 #include "Window.h"
-#include "CUDALaplacePropagation.h"
 #include "EntityManager.h"
 #include "LevelManager.h"
 #include "EventHandler.h"
+#include "CUDALaplacePropagation.h"
+
 
 CoreUtils::Engine::Engine() :
 	system_font_(std::make_unique<sf::Font>()),
@@ -40,7 +42,7 @@ auto CoreUtils::Engine::run() const -> void
 			entity_manager_->getAll()
 		};
 
-		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::CPU);
+		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::GPU);
 
 		window_->generateView(board_context);
 	}

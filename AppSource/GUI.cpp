@@ -1,6 +1,7 @@
-#include "GUI.h"
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
+
+#include "GUI.h"
 
 CoreUtils::GUI::GUI(const sf::RenderWindow& window, const sf::Font& font) :
 	radius_text_(std::make_unique<sf::Text>()),

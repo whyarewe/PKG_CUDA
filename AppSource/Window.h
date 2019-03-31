@@ -1,12 +1,13 @@
 #pragma once
-#include "IWindow.h"
-#include "IGUI.h"
-
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include <thread>
 #include <future>
+
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+
+#include "IWindow.h"
+#include "IGUI.h"
 
 namespace CoreUtils
 {

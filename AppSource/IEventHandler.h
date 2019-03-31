@@ -1,5 +1,4 @@
 #pragma once
-
 #include "IWindow.h"
 #include "IEntityManager.h"
 #include "ILevelManager.h"

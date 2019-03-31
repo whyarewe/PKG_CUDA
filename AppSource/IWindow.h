@@ -1,17 +1,14 @@
 ﻿#pragma once
 #include <cstdint>
 
-#include "Config.h"
-#include "GUI.h"
-#include "SFML/Window.hpp"
-#include <SFML/Graphics/Drawable.hpp>
-#include "CUDALaplacePropagation.h"
+#include <SFML/Window.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Drawable.hpp>
 
-namespace sf
-{
-	class Font;
-}
+#include "GUI.h"
+#include "Config.h"
+#include "CUDALaplacePropagation.h"
 
 namespace CoreUtils
 {

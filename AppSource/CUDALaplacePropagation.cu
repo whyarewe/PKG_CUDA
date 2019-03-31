@@ -21,7 +21,7 @@ auto CUDAPropagation::laplace(ComputingData data, const Device device) -> void
 	}
 }
 
-__global__ void kernel(float* data, float* out_data, const uint32_t x_axis_bound, const uint32_t y_axis_bound)
+__global__ void kernel(float* data, float* out_data, const int x_axis_bound, const int y_axis_bound)
 {
 	const uint16_t idx = blockIdx.x * blockDim.x + threadIdx.x;
 	const uint16_t idy = blockIdx.y * blockDim.y + threadIdx.y;

@@ -2,8 +2,9 @@
 #include <memory>
 #include <Windows.h>
 
-#include "IWindow.h"
 #include <SFML/Graphics/Text.hpp>
+
+#include "IWindow.h"
 #include "IEntityManager.h"
 #include "ILevelManager.h"
 #include "IEventHandler.h"

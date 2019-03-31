@@ -1,13 +1,13 @@
 #pragma once
-#include "Config.h"
-
-#include <cstdint>
 #include <atomic>
+#include <cstdint>
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+
+#include "Config.h"
 
 namespace CoreUtils
 {

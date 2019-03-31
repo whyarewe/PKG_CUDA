@@ -1,7 +1,9 @@
 #pragma once
-#include <cstdint>
 #include <vector>
+#include <cstdint>
+
 #include <SFML/System/Vector2.hpp>
+
 #include "Entity.h"
 
 namespace CoreUtils

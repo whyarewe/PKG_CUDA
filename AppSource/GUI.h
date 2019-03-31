@@ -1,14 +1,14 @@
 #pragma once
-#include "Config.h"
-#include "IGUI.h"
-
 #include <cstdint>
 #include <atomic>
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+
+#include "Config.h"
+#include "IGUI.h"
 
 namespace CoreUtils
 {
