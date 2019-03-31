@@ -116,6 +116,15 @@ auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> 
 			clear();
 			draw(&background);
 
+			if (update_interface_)
+			{
+				gui_->setRadius(data.entity_radius);
+				gui_->setHeatersCount(data.swarm.size());
+				gui_->update();
+
+				update_interface_ = false;
+			}
+
 			gui_->display(*window_);
 			display();
 		}
@@ -187,7 +196,7 @@ auto CoreUtils::Window::isOpen() -> bool
 	return window_->isOpen();
 }
 
-auto CoreUtils::Window::getGUI() const -> GUI&
+auto CoreUtils::Window::toggleControls() -> void
 {
-	return *gui_;
+	gui_->toggleShowControls();
 }

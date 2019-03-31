@@ -46,7 +46,6 @@ auto CoreUtils::Engine::run() -> void
 						swarm_.push_back(Entity(mouse_position.x, mouse_position.y, entity_radius, window_->getWidth(),
 						                        window_->getHeight()));
 
-						window_->getGUI().setHeatersCount(swarm_.size());
 						window_->updateInterface();
 					}
 				}
@@ -57,19 +56,16 @@ auto CoreUtils::Engine::run() -> void
 				{
 				case sf::Keyboard::Up:
 					entity_radius = entity_radius > 20 ? entity_radius : entity_radius += 2;
-					window_->getGUI().setRadius(entity_radius);
 					window_->updateInterface();
 					break;
 				case sf::Keyboard::Down:
 					entity_radius = entity_radius == 1 ? entity_radius : entity_radius -= 2;
-					window_->getGUI().setRadius(entity_radius);
 					window_->updateInterface();
 					break;
 				case sf::Keyboard::BackSpace:
 					if (!swarm_.empty())
 					{
 						swarm_.erase(swarm_.begin());
-						window_->getGUI().setHeatersCount(swarm_.size());
 						window_->updateInterface();
 					}
 					break;
@@ -88,8 +84,7 @@ auto CoreUtils::Engine::run() -> void
 					}
 					break;
 				case sf::Keyboard::I:
-					show_controls = !show_controls;
-					window_->getGUI().setShowControls(show_controls);
+					window_->toggleControls();
 					break;
 				default:
 					break;
@@ -131,6 +126,7 @@ auto CoreUtils::Engine::run() -> void
 			model,
 			window_->getWidth(),
 			window_->getHeight(),
+			entity_radius,
 			swarm_
 		};
 

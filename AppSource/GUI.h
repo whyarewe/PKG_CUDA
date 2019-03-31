@@ -1,5 +1,6 @@
 #pragma once
 #include "Config.h"
+#include "IGUI.h"
 
 #include <cstdint>
 #include <atomic>
@@ -11,7 +12,7 @@
 
 namespace CoreUtils
 {
-	class GUI
+	class GUI : public IGUI
 	{
 	private:
 		std::atomic<uint16_t> radius_{1};
@@ -22,14 +23,14 @@ namespace CoreUtils
 		std::unique_ptr<sf::Text> heaters_count_text_;
 		std::unique_ptr<sf::Text> info_text_;
 		std::unique_ptr<sf::Text> key_bindings_text_;
-	public:
 
+	public:
 		GUI(sf::RenderWindow& window, const sf::Font&);
-		auto setFontConfiguration(const sf::Font&) const -> void;
-		auto setRadius(uint16_t) -> void;
-		auto setHeatersCount(uint16_t) -> void;
-		auto setShowControls(bool) -> void;
+		auto setFontConfiguration(const sf::Font&) const -> void override;
+		auto setRadius(uint16_t) -> void override;
+		auto setHeatersCount(uint16_t) -> void override;
+		auto toggleShowControls() -> void override;
 		auto update() -> void;
-		auto display(sf::RenderWindow&) -> void;
+		auto display(sf::RenderWindow&) -> void override;
 	};
 }

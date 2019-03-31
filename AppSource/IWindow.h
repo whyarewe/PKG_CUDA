@@ -38,6 +38,7 @@ namespace CoreUtils
 		virtual auto isWithinWindow(const sf::Vector2i&) -> bool = 0;
 		virtual auto reloadWindow() -> void = 0;
 		virtual auto updateInterface() -> void = 0;
+		virtual auto toggleControls() -> void = 0;
 		virtual auto draw(sf::Drawable*) -> void = 0;
 		virtual auto getWidth() const -> uint32_t = 0;
 		virtual auto getHeight() const -> uint32_t = 0;
@@ -46,7 +47,6 @@ namespace CoreUtils
 		virtual auto setStyle(WindowStyles) -> void = 0;
 		virtual auto getStyle() const -> WindowStyles = 0;
 		virtual auto getMousePosition() const -> sf::Vector2i = 0;
-		virtual auto getGUI() const -> GUI& = 0;
 		virtual auto generateView(const CUDAHelpers::ComputingData&) -> void = 0;
 		virtual auto constructImageFromVector(sf::Image& background_image,
 		                                      const CUDAHelpers::ComputingData& data) const -> sf::Image = 0;

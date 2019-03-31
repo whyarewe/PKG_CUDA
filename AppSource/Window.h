@@ -20,7 +20,7 @@ namespace CoreUtils
 		std::unique_ptr<GUI> gui_;
 		std::atomic<bool> running_view_{false};
 		std::atomic<bool> needs_reload_{false};
-		std::atomic<bool> update_interface_{true};
+		std::atomic<bool> update_interface_{false};
 
 	public:
 		explicit Window(WindowStyles, const sf::Font&);
@@ -30,6 +30,7 @@ namespace CoreUtils
 		auto display() -> void override;
 		auto reloadWindow() -> void override;
 		auto updateInterface() -> void override;
+		auto toggleControls() -> void override;
 		auto draw(sf::Drawable*) -> void override;
 		auto getWidth() const -> uint32_t override;
 		auto pollEvent(sf::Event&) -> bool override;
@@ -38,7 +39,6 @@ namespace CoreUtils
 		auto setStyle(WindowStyles) -> void override;
 		auto getStyle() const -> WindowStyles override;
 		auto getMousePosition() const -> sf::Vector2i override;
-		auto getGUI() const-> GUI& override;
 		auto isWithinWindow(const sf::Vector2i&) -> bool override;
 		auto generateView(const CUDAHelpers::ComputingData&) -> void override;
 		auto constructImageFromVector(sf::Image& background_image,
