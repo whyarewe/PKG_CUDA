@@ -10,37 +10,61 @@
     <Filter Include="headers\Interface">
       <UniqueIdentifier>{cb6bb29f-2694-419f-b25a-aaad2a6fbcbb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="headers\Core">
+      <UniqueIdentifier>{61f88bda-f79e-49b3-bc0a-e627c239758e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers\CUDA Calculations">
+      <UniqueIdentifier>{eabd1547-a552-422b-a5d9-a8beb6e7223b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CUDASystemInformation.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="CUDAUtils.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="CUDALaplacePropagation.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="IWindow.h">
       <Filter>headers\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>headers\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="IGUI.h">
       <Filter>headers\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IEventHandler.h">
+      <Filter>headers\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDALaplacePropagation.h">
+      <Filter>headers\CUDA Calculations</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDASystemInformation.h">
+      <Filter>headers\CUDA Calculations</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDAUtils.h">
+      <Filter>headers\CUDA Calculations</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IEntityManager.h">
+      <Filter>headers\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ILevelManager.h">
+      <Filter>headers\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.h">
+      <Filter>headers\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +84,15 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="GUI.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHandler.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 #include "IWindow.h"
-#include "GUI.h"
+#include "IGUI.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -14,10 +14,12 @@ namespace CoreUtils
 	{
 	private:
 		std::thread view_;
+		
 		WindowStyles window_style_;
+		std::unique_ptr<IGUI> gui_;
 		sf::ContextSettings settings_;
 		std::unique_ptr<sf::RenderWindow> window_;
-		std::unique_ptr<GUI> gui_;
+		
 		std::atomic<bool> running_view_{false};
 		std::atomic<bool> needs_reload_{false};
 		std::atomic<bool> update_interface_{false};

@@ -26,6 +26,7 @@ namespace CoreUtils
 	{
 	public:
 		IWindow() = default;
+		virtual ~IWindow() = default;
 		IWindow(const IWindow&) = delete;
 		IWindow(const IWindow&&) = delete;
 		IWindow& operator=(const IWindow&) = delete;
@@ -51,6 +52,5 @@ namespace CoreUtils
 		virtual auto constructImageFromVector(sf::Image& background_image,
 		                                      const CUDAHelpers::ComputingData& data) const -> sf::Image = 0;
 
-		virtual ~IWindow() = default;
 	};
 }
