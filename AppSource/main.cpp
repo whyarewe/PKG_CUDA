@@ -1,5 +1,5 @@
-#include "CUDASystemInformation.h"
 #include "Engine.h"
+#include "CUDASystemInformation.h"
 
 int main()
 {

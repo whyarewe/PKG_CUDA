@@ -93,16 +93,25 @@
     <ClInclude Include="CUDAUtils.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="EventHandler.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="IEntityManager.h" />
+    <ClInclude Include="IEventHandler.h" />
     <ClInclude Include="IGUI.h" />
+    <ClInclude Include="ILevelManager.h" />
     <ClInclude Include="IWindow.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>

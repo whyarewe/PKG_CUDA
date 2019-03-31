@@ -36,14 +36,14 @@ __global__ void kernel(float* data, float* out_data, const int x_axis_bound, con
 	out_data[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + y_axis_bound] + data[gid - y_axis_bound]);
 }
 
-auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const int x_axis_bound, const int y_axis_bound,
+auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound,
                                   Entity::EntityContainer swarm) -> void
 {
 	auto is_under_entity = false;
 
-	for (auto i = 1; i < y_axis_bound - 1; ++i)
+	for (auto i = 1u; i < y_axis_bound - 1; ++i)
 	{
-		for (auto j = 1; j < x_axis_bound - 1; j++)
+		for (auto j = 1u; j < x_axis_bound - 1; j++)
 		{
 			for (const auto& entity : swarm)
 			{
@@ -65,7 +65,7 @@ auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const int x_axis_boun
 	}
 }
 
-auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const int x_axis_bound, const int y_axis_bound) -> void
+auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound) -> void
 {
 	float* data = nullptr;
 	float* out_data = nullptr;

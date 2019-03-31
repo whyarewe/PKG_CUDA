@@ -1,17 +1,14 @@
 ﻿#pragma once
 #include <cstdint>
 
-#include "Config.h"
-#include "GUI.h"
-#include "SFML/Window.hpp"
-#include <SFML/Graphics/Drawable.hpp>
-#include "CUDALaplacePropagation.h"
+#include <SFML/Window.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Drawable.hpp>
 
-namespace sf
-{
-	class Font;
-}
+#include "GUI.h"
+#include "Config.h"
+#include "CUDALaplacePropagation.h"
 
 namespace CoreUtils
 {
@@ -26,6 +23,7 @@ namespace CoreUtils
 	{
 	public:
 		IWindow() = default;
+		virtual ~IWindow() = default;
 		IWindow(const IWindow&) = delete;
 		IWindow(const IWindow&&) = delete;
 		IWindow& operator=(const IWindow&) = delete;
@@ -51,6 +49,5 @@ namespace CoreUtils
 		virtual auto constructImageFromVector(sf::Image& background_image,
 		                                      const CUDAHelpers::ComputingData& data) const -> sf::Image = 0;
 
-		virtual ~IWindow() = default;
 	};
 }

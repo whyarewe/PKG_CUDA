@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 
 namespace Config
@@ -24,8 +23,15 @@ namespace Config
 		static unsigned const anti_aliasing_level = 8;
 	}
 
-	namespace GUI_CONFIG
+	namespace GUI_Config
 	{
 		static unsigned short const system_font_size = 12;
+	}
+
+	namespace Entity
+	{
+		static unsigned short const default_entity_radius = 1;
+		static unsigned short const minimal_entity_radius = 1;
+		static unsigned short const maximal_entity_radius = 21;
 	}
 }
