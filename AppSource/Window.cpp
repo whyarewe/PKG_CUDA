@@ -1,11 +1,13 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Shader.hpp>
 
 #include "Window.h"
+#include <iostream>
 
 namespace
 {
-	double R(float x)
+	double R(const float x)
 	{
 		return 255.0605 + (0.02909945 - 255.0605) / std::pow((1 + std::pow((x / 68872.05), 2.133224)), 13205500);
 	}
@@ -103,19 +105,24 @@ auto CoreUtils::Window::generateView(const ILevelManager& level_manager, const I
 	{
 		running_view_ = true;
 
-		sf::Image background_image;
-		background_image.create(level_manager.getXAxisLength(), level_manager.getYAxisLength(), sf::Color::Black);
+		std::vector<Color> background_values(level_manager.getXAxisLength() * level_manager.getYAxisLength(),
+		                                     {0, 0, 0, 0});
+		sf::Texture background_texture;
+		background_texture.create(level_manager.getXAxisLength(), level_manager.getYAxisLength());
+		background_texture.setSmooth(true);
+		sf::Sprite background;
+		background.setTexture(background_texture, false);
 
 		while (isOpen() && !needs_reload_)
 		{
-			constructImageFromVector(background_image, level_manager);
-			sf::Texture background_texture;
-			background_texture.loadFromImage(background_image);
-			sf::Sprite background;
-			background.setTexture(background_texture, true);
+			constructImageFromVector(background_values, level_manager);
+			background_texture.update(reinterpret_cast<const sf::Uint8*>(background_values.data()));
 
 			clear();
-			draw(&background);
+			sf::Shader shader;
+			sf::RenderStates states;
+			states.shader = &shader;
+			window_->draw(background, states);
 
 			if (update_interface_)
 			{
@@ -133,29 +140,31 @@ auto CoreUtils::Window::generateView(const ILevelManager& level_manager, const I
 	});
 }
 
-auto CoreUtils::Window::constructImageFromVector(sf::Image& background_image,
-                                                 const ILevelManager& level_manager) const -> sf::Image
+auto CoreUtils::Window::constructImageFromVector(std::vector<Color>& texture_data,
+                                                 const ILevelManager& level_manager) const -> void
 {
-	for (auto i = 1; i < level_manager.getYAxisLength() - 1; ++i)
+	for (auto i = 1u; i < level_manager.getYAxisLength() - 1; ++i)
 	{
-		for (auto j = 1; j < level_manager.getYAxisLength() - 1; j++)
+		for (auto j = 1u; j < level_manager.getXAxisLength() - 1; ++j)
 		{
-			const auto point_value = level_manager.viewLevel()[i * level_manager.getXAxisLength() + j];
-
-			auto pixel_color = sf::Color(
-				static_cast<uint8_t>(R(point_value)),
-				static_cast<uint8_t>(G(point_value)),
-				static_cast<uint8_t>(B(point_value)));
+			const auto current_index = i * level_manager.getXAxisLength() + j;
+			const auto point_value = level_manager.viewLevel()[current_index];
 
 			if (point_value > 125.f)
 			{
-				pixel_color = sf::Color::White;
+				texture_data.at(current_index) = {255, 255, 255, 255};
 			}
-
-			background_image.setPixel(j, i, pixel_color);
+			else
+			{
+				texture_data.at(current_index) = {
+					static_cast<sf::Uint8>(R(point_value)),
+					static_cast<sf::Uint8>(G(point_value)),
+					static_cast<sf::Uint8>(B(point_value)),
+					255
+				};
+			}
 		}
 	}
-	return background_image;
 }
 
 auto CoreUtils::Window::setActive(const bool active) const -> void
