@@ -5,13 +5,15 @@ CoreUtils::EventHandler::EventHandler() = default;
 
 CoreUtils::EventHandler::~EventHandler() = default;
 
-auto CoreUtils::EventHandler::intercept(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager, bool *output) -> void
+auto CoreUtils::EventHandler::intercept(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager,
+                                        bool* output) -> void
 {
 	handleInterrupts(window, entity_manager, level_manager, output)
 		.handleControls(window, entity_manager, level_manager);
 }
 
-auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager, bool* output) -> EventHandler&
+auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& entity_manager,
+                                               ILevelManager& level_manager, bool* output) -> EventHandler&
 {
 	sf::Event event{};
 	while (window.pollEvent(event))
@@ -28,7 +30,8 @@ auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& 
 
 				if (window.isWithinWindow(mouse_position))
 				{
-					entity_manager.spawn(mouse_position, level_manager.getXAxisLength(), level_manager.getYAxisLength());
+					entity_manager.spawn(mouse_position, level_manager.getXAxisLength(),
+					                     level_manager.getYAxisLength());
 					*output = true;
 				}
 			}
@@ -171,14 +174,16 @@ auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& 
 	return *this;
 }
 
-auto CoreUtils::EventHandler::handleControls(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager) -> EventHandler&
+auto CoreUtils::EventHandler::handleControls(IWindow& window, IEntityManager& entity_manager,
+                                             ILevelManager& level_manager) -> EventHandler&
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
 		const auto mouse_position = window.getMousePosition();
 		if (window.isWithinWindow(mouse_position))
 		{
-			entity_manager.spawnTemporary(mouse_position, level_manager.getXAxisLength(), level_manager.getYAxisLength());
+			entity_manager.spawnTemporary(mouse_position, level_manager.getXAxisLength(),
+			                              level_manager.getYAxisLength());
 		}
 	}
 	return *this;

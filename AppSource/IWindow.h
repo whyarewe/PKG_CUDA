@@ -48,6 +48,5 @@ namespace CoreUtils
 		virtual auto generateView(const ILevelManager&, const IEntityManager&) -> void = 0;
 		virtual auto constructImageFromVector(sf::Image& background_image,
 		                                      const ILevelManager&) const -> sf::Image = 0;
-
 	};
 }

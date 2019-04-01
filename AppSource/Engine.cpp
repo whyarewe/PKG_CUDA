@@ -58,11 +58,11 @@ auto CoreUtils::Engine::run() const -> void
 			std::cout << times.back() << std::endl;
 		}
 
-		if(times.size() > 1000)
+		if (times.size() > 1000)
 		{
 			times.clear();
 		}
-		
+
 		window_->generateView(*level_manager_, *entity_manager_);
 	}
 }

@@ -88,4 +88,3 @@ auto CoreUtils::GUI::display(sf::RenderWindow& window) -> void
 	window.draw(*heaters_count_text_);
 	window.draw(*radius_text_);
 }
-
