@@ -133,7 +133,8 @@ auto CoreUtils::Window::generateView(const ILevelManager& level_manager, const I
 	});
 }
 
-auto CoreUtils::Window::constructImageFromVector(sf::Image& background_image, const ILevelManager& level_manager) const -> sf::Image
+auto CoreUtils::Window::constructImageFromVector(sf::Image& background_image,
+                                                 const ILevelManager& level_manager) const -> sf::Image
 {
 	for (auto i = 1; i < level_manager.getYAxisLength() - 1; ++i)
 	{

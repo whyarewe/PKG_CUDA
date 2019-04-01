@@ -10,8 +10,8 @@ namespace CoreUtils
 		public IEventHandler
 	{
 	private:
-		auto handleInterrupts(IWindow&, IEntityManager&, ILevelManager&, bool*)-> EventHandler&;
-		auto handleControls(IWindow&, IEntityManager&, ILevelManager&)-> EventHandler&;
+		auto handleInterrupts(IWindow&, IEntityManager&, ILevelManager&, bool*) -> EventHandler&;
+		auto handleControls(IWindow&, IEntityManager&, ILevelManager&) -> EventHandler&;
 
 	public:
 		EventHandler();
