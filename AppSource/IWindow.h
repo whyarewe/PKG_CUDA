@@ -7,6 +7,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 
 #include "GUI.h"
+#include "Color.h"
 #include "Config.h"
 #include "CUDALaplacePropagation.h"
 
@@ -46,7 +47,6 @@ namespace CoreUtils
 		virtual auto getStyle() const -> WindowStyles = 0;
 		virtual auto getMousePosition() const -> sf::Vector2i = 0;
 		virtual auto generateView(const ILevelManager&, const IEntityManager&) -> void = 0;
-		virtual auto constructImageFromVector(sf::Image& background_image,
-		                                      const ILevelManager&) const -> sf::Image = 0;
+		virtual auto constructImageFromVector(std::vector<Color>&, const ILevelManager&) const -> void = 0;
 	};
 }

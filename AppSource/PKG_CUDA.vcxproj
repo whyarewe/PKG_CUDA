@@ -87,6 +87,7 @@
     <CudaCompile Include="CUDALaplacePropagation.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="CUDALaplacePropagation.h" />
     <ClInclude Include="CUDASystemInformation.h" />

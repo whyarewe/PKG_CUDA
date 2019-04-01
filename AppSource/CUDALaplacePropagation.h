@@ -12,7 +12,7 @@ namespace CUDAHelpers
 		uint32_t x_axis_bound;
 		uint32_t y_axis_bound;
 		uint16_t entity_radius;
-		Entity::EntityContainer swarm;
+		CoreUtils::Entity::EntityContainer swarm;
 	};
 
 	class CUDAPropagation

@@ -22,8 +22,8 @@ CoreUtils::Engine::Engine() :
 	{
 		std::exit(0);
 	}
-	window_ = std::make_unique<Window>(WindowStyles::NonResizable, *system_font_);
-	level_manager_ = std::make_unique<LevelManager>(window_->getWidth(), window_->getHeight());
+	level_manager_ = std::make_unique<LevelManager>(Config::FullHDResolution::width, Config::FullHDResolution::height);
+	window_ = std::make_unique<Window>(WindowStyles::FullScreen, *system_font_);
 }
 
 auto CoreUtils::Engine::run() const -> void
@@ -46,7 +46,7 @@ auto CoreUtils::Engine::run() const -> void
 		};
 
 		auto start = std::chrono::system_clock::now();
-		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::GPU);
+		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::CPU);
 		auto stop = std::chrono::system_clock::now();
 
 		std::chrono::duration<double> time_elapsed = stop - start;
