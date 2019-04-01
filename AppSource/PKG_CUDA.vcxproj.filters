@@ -66,6 +66,9 @@
     <ClInclude Include="LevelManager.h">
       <Filter>headers\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>headers\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp">

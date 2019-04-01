@@ -7,6 +7,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "IWindow.h"
+#include "Color.h"
 #include "IGUI.h"
 
 namespace CoreUtils

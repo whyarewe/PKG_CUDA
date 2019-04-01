@@ -7,6 +7,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 
 #include "GUI.h"
+#include "Color.h"
 #include "Config.h"
 #include "CUDALaplacePropagation.h"
 
@@ -17,14 +18,6 @@ namespace CoreUtils
 		Resizable = sf::Style::Resize | sf::Style::Close,
 		NonResizable = sf::Style::Close,
 		FullScreen = sf::Style::Fullscreen
-	};
-
-	struct Color
-	{
-		sf::Uint8 r;
-		sf::Uint8 g;
-		sf::Uint8 b;
-		sf::Uint8 a;
 	};
 
 	class IWindow

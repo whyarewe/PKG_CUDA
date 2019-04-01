@@ -2,8 +2,9 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Shader.hpp>
 
-#include "Window.h"
 #include <iostream>
+
+#include "Window.h"
 
 namespace
 {
