@@ -34,6 +34,11 @@ auto CoreUtils::LevelManager::update(IEntityManager& entity_manager) -> void
 	setHeatLevel(entity_manager.getAll(), x_axis_length_);
 }
 
+auto CoreUtils::LevelManager::viewLevel() const -> const Level&
+{
+	return level_;
+}
+
 auto CoreUtils::LevelManager::getXAxisLength() const -> uint32_t
 {
 	return x_axis_length_;

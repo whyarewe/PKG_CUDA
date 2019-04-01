@@ -30,6 +30,11 @@ auto CoreUtils::EntityManager::increaseRadius() -> void
 	if (radius_ < Config::Entity::maximal_entity_radius) { radius_++; }
 }
 
+auto CoreUtils::EntityManager::number() const -> uint32_t
+{
+	return static_cast<uint32_t>(swarm_.size());
+}
+
 auto CoreUtils::EntityManager::getCurrentRadius() const -> uint16_t
 {
 	return  radius_;

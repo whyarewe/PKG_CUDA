@@ -17,6 +17,7 @@ namespace CoreUtils
 		~LevelManager();
 		auto getLevel() -> Level& override;
 		auto update(IEntityManager&) -> void override;
+		auto viewLevel() const -> const Level& override;
 		auto getXAxisLength() const -> uint32_t override;
 		auto getYAxisLength() const -> uint32_t override;
 	};

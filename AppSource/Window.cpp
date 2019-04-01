@@ -91,7 +91,7 @@ auto CoreUtils::Window::getMousePosition() const -> sf::Vector2i
 	return sf::Mouse::getPosition(*window_);
 }
 
-auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> void
+auto CoreUtils::Window::generateView(const ILevelManager& level_manager, const IEntityManager& entity_manager) -> void
 {
 	if (running_view_) { return; }
 
@@ -104,11 +104,11 @@ auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> 
 		running_view_ = true;
 
 		sf::Image background_image;
-		background_image.create(data.x_axis_bound, data.y_axis_bound, sf::Color::Black);
+		background_image.create(level_manager.getXAxisLength(), level_manager.getYAxisLength(), sf::Color::Black);
 
 		while (isOpen() && !needs_reload_)
 		{
-			constructImageFromVector(background_image, data);
+			constructImageFromVector(background_image, level_manager);
 			sf::Texture background_texture;
 			background_texture.loadFromImage(background_image);
 			sf::Sprite background;
@@ -119,8 +119,8 @@ auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> 
 
 			if (update_interface_)
 			{
-				gui_->setRadius(data.entity_radius);
-				gui_->setHeatersCount(data.swarm.size());
+				gui_->setRadius(entity_manager.getCurrentRadius());
+				gui_->setHeatersCount(entity_manager.number());
 				gui_->update();
 
 				update_interface_ = false;
@@ -133,19 +133,20 @@ auto CoreUtils::Window::generateView(const CUDAHelpers::ComputingData& data) -> 
 	});
 }
 
-auto CoreUtils::Window::constructImageFromVector(sf::Image& background_image,
-                                                 const CUDAHelpers::ComputingData& data) const -> sf::Image
+auto CoreUtils::Window::constructImageFromVector(sf::Image& background_image, const ILevelManager& level_manager) const -> sf::Image
 {
-	for (auto i = 1; i < data.y_axis_bound - 1; ++i)
+	for (auto i = 1; i < level_manager.getYAxisLength() - 1; ++i)
 	{
-		for (auto j = 1; j < data.x_axis_bound - 1; j++)
+		for (auto j = 1; j < level_manager.getYAxisLength() - 1; j++)
 		{
-			auto pixel_color = sf::Color(
-				static_cast<uint8_t>(R(data.board[i * data.x_axis_bound + j])),
-				static_cast<uint8_t>(G(data.board[i * data.x_axis_bound + j])),
-				static_cast<uint8_t>(B(data.board[i * data.x_axis_bound + j])));
+			const auto point_value = level_manager.viewLevel()[i * level_manager.getXAxisLength() + j];
 
-			if (data.board[i * data.x_axis_bound + j] > 125.f)
+			auto pixel_color = sf::Color(
+				static_cast<uint8_t>(R(point_value)),
+				static_cast<uint8_t>(G(point_value)),
+				static_cast<uint8_t>(B(point_value)));
+
+			if (point_value > 125.f)
 			{
 				pixel_color = sf::Color::White;
 			}

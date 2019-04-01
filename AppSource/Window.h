@@ -43,9 +43,8 @@ namespace CoreUtils
 		auto getStyle() const -> WindowStyles override;
 		auto getMousePosition() const -> sf::Vector2i override;
 		auto isWithinWindow(const sf::Vector2i&) -> bool override;
-		auto generateView(const CUDAHelpers::ComputingData&) -> void override;
-		auto constructImageFromVector(sf::Image& background_image,
-		                              const CUDAHelpers::ComputingData& data) const -> sf::Image override;
+		auto generateView(const ILevelManager&, const IEntityManager&) -> void override;
+		auto constructImageFromVector(sf::Image& background_image, const ILevelManager&) const -> sf::Image override;
 
 		~Window();
 	};

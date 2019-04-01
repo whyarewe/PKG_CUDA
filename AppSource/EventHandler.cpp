@@ -5,13 +5,13 @@ CoreUtils::EventHandler::EventHandler() = default;
 
 CoreUtils::EventHandler::~EventHandler() = default;
 
-auto CoreUtils::EventHandler::intercept(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager) -> void
+auto CoreUtils::EventHandler::intercept(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager, bool *output) -> void
 {
-	handleInterrupts(window, entity_manager, level_manager)
+	handleInterrupts(window, entity_manager, level_manager, output)
 		.handleControls(window, entity_manager, level_manager);
 }
 
-auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager) -> EventHandler&
+auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager, bool* output) -> EventHandler&
 {
 	sf::Event event{};
 	while (window.pollEvent(event))
@@ -29,6 +29,7 @@ auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& 
 				if (window.isWithinWindow(mouse_position))
 				{
 					entity_manager.spawn(mouse_position, level_manager.getXAxisLength(), level_manager.getYAxisLength());
+					*output = true;
 				}
 			}
 		}

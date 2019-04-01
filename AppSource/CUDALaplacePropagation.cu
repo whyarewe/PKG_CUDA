@@ -5,15 +5,15 @@
 
 using namespace CUDAHelpers;
 
-auto CUDAPropagation::laplace(ComputingData data, const Device device) -> void
+auto CUDAPropagation::laplace(const ComputingData& data, const Device device) -> void
 {
 	switch (device)
 	{
 	case Device::GPU:
-		laplace_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
+		laplace_gpu(data.board,  data.x_axis_bound, data.y_axis_bound);
 		break;
 	case Device::CPU:
-		laplace_cpu(data.board, data.x_axis_bound, data.y_axis_bound, data.swarm);
+		laplace_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
 	default:
 		std::cerr << "CUDA Progatation: Critical error, unknown device!" << std::endl;
@@ -36,31 +36,14 @@ __global__ void kernel(float* data, float* out_data, const int x_axis_bound, con
 	out_data[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + y_axis_bound] + data[gid - y_axis_bound]);
 }
 
-auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound,
-                                  Entity::EntityContainer swarm) -> void
+auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound) -> void
 {
-	auto is_under_entity = false;
-
 	for (auto i = 1u; i < y_axis_bound - 1; ++i)
 	{
 		for (auto j = 1u; j < x_axis_bound - 1; j++)
 		{
-			for (const auto& entity : swarm)
-			{
-				if (i >= entity.getDimensions().getTopBorder()
-					&& i <= entity.getDimensions().getBottomBorder()
-					&& j >= entity.getDimensions().getRightBorder()
-					&& j <= entity.getDimensions().getLeftBorder())
-				{
-					is_under_entity = true;
-				}
-			}
-
-			if (!is_under_entity)
-			{
 				vec[i * x_axis_bound + j] = (0.25f * (vec[i * x_axis_bound + j - 1] + vec[i * x_axis_bound + j + 1]
 					+ vec[i * x_axis_bound + j + y_axis_bound] + vec[i * x_axis_bound + j - y_axis_bound]));
-			}
 		}
 	}
 }
