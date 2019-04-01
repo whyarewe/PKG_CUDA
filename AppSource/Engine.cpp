@@ -30,11 +30,11 @@ auto CoreUtils::Engine::run() const -> void
 {
 	window_->setActive(false);
 	std::vector<double> times;
-	bool outputTime = false;
+	auto output_time = false;
 
 	while (window_->isOpen())
 	{
-		event_handler_->intercept(*window_, *entity_manager_, *level_manager_, &outputTime);
+		event_handler_->intercept(*window_, *entity_manager_, *level_manager_, &output_time);
 		level_manager_->update(*entity_manager_);
 
 		CUDAHelpers::ComputingData board_context{
@@ -52,9 +52,9 @@ auto CoreUtils::Engine::run() const -> void
 		std::chrono::duration<double> time_elapsed = stop - start;
 		times.push_back(time_elapsed.count());
 
-		if (outputTime)
+		if (output_time)
 		{
-			outputTime = false;
+			output_time = false;
 			std::cout << times.back() << std::endl;
 		}
 
