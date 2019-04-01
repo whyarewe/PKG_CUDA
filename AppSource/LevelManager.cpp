@@ -17,7 +17,7 @@ auto CoreUtils::LevelManager::setHeatLevel(const IEntityManager::Swarm& swarm, c
 CoreUtils::LevelManager::LevelManager(const uint32_t x_axis_size, const uint32_t y_axis_size) :
 	x_axis_length_(x_axis_size), y_axis_length_(y_axis_size)
 {
-	level_.reserve(x_axis_size*y_axis_size);
+	level_.reserve(x_axis_size * y_axis_size);
 }
 
 CoreUtils::LevelManager::~LevelManager() = default;
@@ -32,6 +32,11 @@ auto CoreUtils::LevelManager::update(IEntityManager& entity_manager) -> void
 	setHeatLevel(entity_manager.getTemporary(), x_axis_length_);
 	entity_manager.clearTemporaryElements();
 	setHeatLevel(entity_manager.getAll(), x_axis_length_);
+}
+
+auto CoreUtils::LevelManager::viewLevel() const -> const Level&
+{
+	return level_;
 }
 
 auto CoreUtils::LevelManager::getXAxisLength() const -> uint32_t

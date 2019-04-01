@@ -15,12 +15,12 @@ namespace CoreUtils
 	{
 	private:
 		std::thread view_;
-		
+
 		WindowStyles window_style_;
 		std::unique_ptr<IGUI> gui_;
 		sf::ContextSettings settings_;
 		std::unique_ptr<sf::RenderWindow> window_;
-		
+
 		std::atomic<bool> running_view_{false};
 		std::atomic<bool> needs_reload_{false};
 		std::atomic<bool> update_interface_{false};
@@ -43,9 +43,8 @@ namespace CoreUtils
 		auto getStyle() const -> WindowStyles override;
 		auto getMousePosition() const -> sf::Vector2i override;
 		auto isWithinWindow(const sf::Vector2i&) -> bool override;
-		auto generateView(const CUDAHelpers::ComputingData&) -> void override;
-		auto constructImageFromVector(sf::Image& background_image,
-		                              const CUDAHelpers::ComputingData& data) const -> sf::Image override;
+		auto generateView(const ILevelManager&, const IEntityManager&) -> void override;
+		auto constructImageFromVector(sf::Image& background_image, const ILevelManager&) const -> sf::Image override;
 
 		~Window();
 	};

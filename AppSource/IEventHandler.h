@@ -15,6 +15,6 @@ namespace CoreUtils
 		IEventHandler& operator=(const IEventHandler&) = delete;
 		IEventHandler& operator=(const IEventHandler&&) = delete;
 
-		virtual auto intercept(IWindow&, IEntityManager&, ILevelManager&) -> void = 0;
+		virtual auto intercept(IWindow&, IEntityManager&, ILevelManager&, bool*) -> void = 0;
 	};
 }

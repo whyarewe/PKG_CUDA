@@ -29,9 +29,12 @@ CoreUtils::Engine::Engine() :
 auto CoreUtils::Engine::run() const -> void
 {
 	window_->setActive(false);
+	std::vector<double> times;
+	auto output_time = false;
+
 	while (window_->isOpen())
 	{
-		event_handler_->intercept(*window_, *entity_manager_, *level_manager_);
+		event_handler_->intercept(*window_, *entity_manager_, *level_manager_, &output_time);
 		level_manager_->update(*entity_manager_);
 
 		CUDAHelpers::ComputingData board_context{
@@ -42,9 +45,25 @@ auto CoreUtils::Engine::run() const -> void
 			entity_manager_->getAll()
 		};
 
+		auto start = std::chrono::system_clock::now();
 		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::GPU);
+		auto stop = std::chrono::system_clock::now();
 
-		window_->generateView(board_context);
+		std::chrono::duration<double> time_elapsed = stop - start;
+		times.push_back(time_elapsed.count());
+
+		if (output_time)
+		{
+			output_time = false;
+			std::cout << times.back() << std::endl;
+		}
+
+		if (times.size() > 1000)
+		{
+			times.clear();
+		}
+
+		window_->generateView(*level_manager_, *entity_manager_);
 	}
 }
 
