@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include <SFML/Graphics/Text.hpp>
+#include <cuda_runtime_api.h>
+#include <cuda.h>
 
 #include "Engine.h"
 #include "Window.h"
@@ -32,6 +34,14 @@ auto CoreUtils::Engine::run() const -> void
 	std::vector<double> times;
 	auto output_time = false;
 
+	float* data = nullptr;
+	float* out_data = nullptr;
+	float* host_data = nullptr;
+
+	cudaMalloc((void**)&data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
+	cudaMalloc((void**)&out_data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
+	cudaMallocHost((void**)&host_data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
+
 	while (window_->isOpen())
 	{
 		event_handler_->intercept(*window_, *entity_manager_, *level_manager_, &output_time);
@@ -46,7 +56,7 @@ auto CoreUtils::Engine::run() const -> void
 		};
 
 		auto start = std::chrono::system_clock::now();
-		CUDAHelpers::CUDAPropagation::laplace(board_context, CUDAHelpers::CUDAPropagation::Device::CPU);
+		CUDAHelpers::CUDAPropagation::laplace(data, out_data, host_data, board_context, CUDAHelpers::CUDAPropagation::Device::GPU);
 		auto stop = std::chrono::system_clock::now();
 
 		std::chrono::duration<double> time_elapsed = stop - start;
@@ -65,6 +75,10 @@ auto CoreUtils::Engine::run() const -> void
 
 		window_->generateView(*level_manager_, *entity_manager_);
 	}
+
+	cudaFree(data);
+	cudaFree(out_data);
+	cudaFree(host_data);
 }
 
 auto CoreUtils::Engine::getExePath() -> std::string

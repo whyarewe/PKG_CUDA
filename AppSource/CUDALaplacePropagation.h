@@ -20,11 +20,11 @@ namespace CUDAHelpers
 	public:
 		enum class Device { CPU, GPU };
 
-		static void laplace(const ComputingData&, Device device);
+		static void laplace(float* in, float* out, float* host_data, const ComputingData&, Device device);
 
 	private:
 		static auto laplace_cpu(std::vector<float>& vec, uint32_t x_axis_bound, uint32_t y_axis_bound) -> void;
 
-		static auto laplace_gpu(std::vector<float>& vec, uint32_t x_axis_bound, uint32_t y_axis_bound) -> void;
+		static auto laplace_gpu(float* data, float* out_data, float* host_data, uint32_t x_axis_bound, uint32_t y_axis_bound, std::vector<float>& vec) -> void;
 	};
 }
