@@ -2,17 +2,15 @@
 
 #include "CUDALaplacePropagation.h"
 #include "CUDAUtils.h"
-#include "Config.h"
-#include <chrono>
 
 using namespace CUDAHelpers;
 
-auto CUDAPropagation::laplace(float* in, float* out, float* host_data, const ComputingData& data, const Device device) -> void
+auto CUDAPropagation::laplace(const ComputingData& data, const Device device) -> void
 {
 	switch (device)
 	{
 	case Device::GPU:
-		laplace_gpu( in, out, host_data, data.x_axis_bound, data.y_axis_bound, data.board);
+		laplace_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
 	case Device::CPU:
 		laplace_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
@@ -41,31 +39,33 @@ __global__ void kernel(float* data, float* out_data, const int x_axis_bound, con
 auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis_bound,
                                   const uint32_t y_axis_bound) -> void
 {
-	std::vector<float> out_vec(vec.capacity());
-
 	for (auto i = 1u; i < y_axis_bound - 1; ++i)
 	{
 		for (auto j = 1u; j < x_axis_bound - 1; j++)
 		{
-			out_vec[i * x_axis_bound + j] = (0.25f * (vec[i * x_axis_bound + j - 1] + vec[i * x_axis_bound + j + 1]
+			vec[i * x_axis_bound + j] = (0.25f * (vec[i * x_axis_bound + j - 1] + vec[i * x_axis_bound + j + 1]
 				+ vec[i * x_axis_bound + j + y_axis_bound] + vec[i * x_axis_bound + j - y_axis_bound]));
 		}
 	}
-
-	vec = out_vec;
 }
 
-auto CUDAPropagation::laplace_gpu(float* data, float* out_data, float* host_data, uint32_t x_axis_bound,
-									uint32_t y_axis_bound, std::vector<float>& vec) -> void
+auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const uint32_t x_axis_bound,
+                                  const uint32_t y_axis_bound) -> void
 {
-	host_data = vec.data();
+	float* data = nullptr;
+	float* out_data = nullptr;
+	VALID(cudaMalloc(&data, x_axis_bound * y_axis_bound * sizeof(float)));
+	VALID(cudaMalloc(&out_data, x_axis_bound * y_axis_bound * sizeof(float)));
 
-	VALID(cudaMemcpyAsync(data, host_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
+	VALID(cudaMemcpy(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 
-	dim3 block(32, 32);
-	dim3 grid(Config::StandardResolution::width / block.x, Config::StandardResolution::height / block.y);
+	dim3 block(10, 10);
+	dim3 grid(60, 60);
 
-	kernel << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound);
+	kernel << <grid, block >> >(data, out_data, x_axis_bound, y_axis_bound);
 
-	VALID(cudaMemcpyAsync(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
+	VALID(cudaMemcpy(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
+
+	cudaFree(data);
+	cudaFree(out_data);
 }
