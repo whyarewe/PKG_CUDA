@@ -66,9 +66,6 @@
     <ClInclude Include="LevelManager.h">
       <Filter>headers\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>headers\Core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp">
@@ -78,9 +75,6 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
@@ -96,6 +90,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cu">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

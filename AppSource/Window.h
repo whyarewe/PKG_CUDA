@@ -7,7 +7,6 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "IWindow.h"
-#include "Color.h"
 #include "IGUI.h"
 
 namespace CoreUtils
@@ -45,7 +44,7 @@ namespace CoreUtils
 		auto getMousePosition() const -> sf::Vector2i override;
 		auto isWithinWindow(const sf::Vector2i&) -> bool override;
 		auto generateView(const ILevelManager&, const IEntityManager&) -> void override;
-		auto constructImageFromVector(std::vector<Color>&, const ILevelManager&) const -> void override;
+		auto constructImageFromVector(sf::Image& background_image, const ILevelManager&) const -> sf::Image override;
 
 		~Window();
 	};

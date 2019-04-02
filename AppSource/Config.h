@@ -13,8 +13,8 @@ namespace Config
 
 	namespace StandardResolution
 	{
-		static unsigned const width = 600;
-		static unsigned const height = 600;
+		static unsigned const width = 768;
+		static unsigned const height = 768;
 	};
 
 	namespace StandardWindowSetting
