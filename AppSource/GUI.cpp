@@ -12,7 +12,7 @@ CoreUtils::GUI::GUI(const sf::RenderWindow& window, const sf::Font& font) :
 	GUI::setFontConfiguration(font);
 
 	radius_text_->move(static_cast<float>(window.getSize().x - 110), 30.f);
-	heaters_count_text_->move(static_cast<float>(window.getSize().y - 110), 10.f);
+	heaters_count_text_->move(static_cast<float>(window.getSize().x - 110), 10.f);
 	key_bindings_text_->move(5.f, 10.f);
 
 	std::string info_string("Press 'i' to toggle controls\n");

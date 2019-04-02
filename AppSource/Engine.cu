@@ -24,8 +24,8 @@ CoreUtils::Engine::Engine() :
 	{
 		std::exit(0);
 	}
-	level_manager_ = std::make_unique<LevelManager>(Config::StandardResolution::width, Config::StandardResolution::height);
-	window_ = std::make_unique<Window>(WindowStyles::Resizable, *system_font_);
+	level_manager_ = std::make_unique<LevelManager>(Config::FullHDResolution::width, Config::FullHDResolution::height);
+	window_ = std::make_unique<Window>(WindowStyles::FullScreen, *system_font_);
 }
 
 auto CoreUtils::Engine::run() const -> void

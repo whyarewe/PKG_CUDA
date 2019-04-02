@@ -27,14 +27,14 @@ __global__ void kernel(float* data, float* out_data, const int x_axis_bound, con
 	const uint16_t idx = blockIdx.x * blockDim.x + threadIdx.x;
 	const uint16_t idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-	const auto gid = idy * y_axis_bound + idx;
+	const auto gid = idy * x_axis_bound + idx;
 
 	if (idx > x_axis_bound || idy > y_axis_bound)
 	{
 		return;
 	}
 
-	out_data[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + y_axis_bound] + data[gid - y_axis_bound]);
+	out_data[gid] = 0.25f * (data[gid - 1] + data[gid + 1] + data[gid + x_axis_bound] + data[gid - x_axis_bound]);
 }
 
 auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis_bound,
@@ -47,7 +47,7 @@ auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis
 		for (auto j = 1u; j < x_axis_bound - 1; j++)
 		{
 			out_vec[i * x_axis_bound + j] = (0.25f * (vec[i * x_axis_bound + j - 1] + vec[i * x_axis_bound + j + 1]
-				+ vec[i * x_axis_bound + j + y_axis_bound] + vec[i * x_axis_bound + j - y_axis_bound]));
+				+ vec[i * x_axis_bound + j + x_axis_bound] + vec[i * x_axis_bound + j - x_axis_bound]));
 		}
 	}
 
@@ -62,7 +62,7 @@ auto CUDAPropagation::laplace_gpu(float* data, float* out_data, float* host_data
 	VALID(cudaMemcpyAsync(data, host_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 
 	dim3 block(32, 32);
-	dim3 grid(Config::StandardResolution::width / block.x, Config::StandardResolution::height / block.y);
+	dim3 grid(x_axis_bound / block.x, y_axis_bound / block.y);
 
 	kernel << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound);
 
