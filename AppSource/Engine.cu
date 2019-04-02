@@ -24,8 +24,8 @@ CoreUtils::Engine::Engine() :
 	{
 		std::exit(0);
 	}
-	window_ = std::make_unique<Window>(WindowStyles::NonResizable, *system_font_);
-	level_manager_ = std::make_unique<LevelManager>(window_->getWidth(), window_->getHeight());
+	level_manager_ = std::make_unique<LevelManager>(Config::StandardResolution::width, Config::StandardResolution::height);
+	window_ = std::make_unique<Window>(WindowStyles::Resizable, *system_font_);
 }
 
 auto CoreUtils::Engine::run() const -> void
@@ -75,6 +75,10 @@ auto CoreUtils::Engine::run() const -> void
 
 		window_->generateView(*level_manager_, *entity_manager_);
 	}
+
+	cudaFree(data);
+	cudaFree(out_data);
+	cudaFree(host_data);
 }
 
 auto CoreUtils::Engine::getExePath() -> std::string

@@ -80,9 +80,6 @@
     <ClCompile Include="Entity.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -96,6 +93,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cu">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -107,7 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Engine.cu" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="EventHandler.cpp" />
