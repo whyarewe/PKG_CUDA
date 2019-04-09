@@ -150,8 +150,6 @@ auto CoreUtils::Window::generateView(const ILevelManager& level_manager, const I
 auto CoreUtils::Window::constructImageFromVector(std::vector<Color>& texture_data,
                                                  const ILevelManager& level_manager) const -> void
 {
-	auto start = std::chrono::system_clock::now();
-
 	for (auto i = 1u; i < level_manager.getYAxisLength() - 1; ++i)
 	{
 		for (auto j = 1u; j < level_manager.getXAxisLength() - 1; ++j)
@@ -166,7 +164,7 @@ auto CoreUtils::Window::constructImageFromVector(std::vector<Color>& texture_dat
 			else
 			{
 				texture_data.at(current_index) = {
-					r_tab_[static_cast<int>(point_value *10)],
+					r_tab_[static_cast<int>(point_value * 10)],
 					g_tab_[static_cast<int>(point_value * 10)],
 					b_tab_[static_cast<int>(point_value * 10)],
 					255
@@ -174,10 +172,6 @@ auto CoreUtils::Window::constructImageFromVector(std::vector<Color>& texture_dat
 			}
 		}
 	}
-
-	auto end = std::chrono::system_clock::now();
-	std::chrono::duration<double> res = end - start;
-	printf("%f\n", res.count());
 }
 
 auto CoreUtils::Window::setActive(const bool active) const -> void
