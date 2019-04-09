@@ -2,6 +2,5 @@
 
 ##### TODO
 - measure time differences on GPGPU and CPU
-
-###### Controls
-- enable window scaling
+- implement and compare other propagation methods
+- separate CUDA code from engine
