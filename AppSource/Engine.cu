@@ -57,7 +57,7 @@ auto CoreUtils::Engine::run() const -> void
 		auto start = std::chrono::system_clock::now();
 
 		CUDAHelpers::CUDAPropagation::propagate(data, out_data, board_context,
-			CUDAHelpers::CUDAPropagation::Device::GPU, CUDAHelpers::CUDAPropagation::Method::FTCS);
+			CUDAHelpers::CUDAPropagation::Device::GPU, CUDAHelpers::CUDAPropagation::Method::FIS);
 
 		auto stop = std::chrono::system_clock::now();
 

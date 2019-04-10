@@ -20,7 +20,7 @@ namespace CUDAHelpers
 	public:
 		enum class Device { CPU, GPU };
 
-		enum class Method { Laplace, FTCS };
+		enum class Method { Laplace, FTCS, FIS };
 
 		static void propagate(float* in, float* out, const ComputingData&, const Device device, const Method method);
 
@@ -33,5 +33,8 @@ namespace CUDAHelpers
 
 		static auto ftcs_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 		static auto ftcs_gpu(float*, float*, const uint32_t, const uint32_t, std::vector<float>&) -> void;
+
+		static auto fis_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
+		static auto fis_gpu(float*, float*, const uint32_t, const uint32_t, std::vector<float>&) -> void;
 	};
 }
