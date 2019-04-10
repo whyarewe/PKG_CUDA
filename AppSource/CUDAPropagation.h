@@ -25,8 +25,9 @@ namespace CUDAHelpers
 		static void propagate(float* in, float* out, const ComputingData&, const Device device, const Method method);
 
 	private:
-		static auto propagate_cpu(const ComputingData&, const Method) -> void;
-		static auto propagate_gpu(float*, float*, const ComputingData&, const Method) -> void;
+		static auto laplace(float* in, float* out, const ComputingData& data, const Device device) -> void;
+		static auto ftcs(float* in, float* out, const ComputingData& data, const Device device) -> void;
+		static auto fis(float* in, float* out, const ComputingData& data, const Device device) -> void;
 
 		static auto laplace_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 		static auto laplace_gpu(float*, float*, const uint32_t, const uint32_t, std::vector<float>&) -> void;

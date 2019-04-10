@@ -8,57 +8,59 @@ using namespace CUDAHelpers;
 
 auto CUDAPropagation::propagate(float* in, float* out, const ComputingData& data, const Device device, const Method method) -> void
 {
+	switch (method)
+	{
+	case Method::Laplace:
+		laplace(in, out, data, device);
+		break;
+	case Method::FTCS:
+		ftcs(in, out, data, device);
+		break;
+	case Method::FIS:
+		fis(in, out, data, device);
+		break;
+	default:
+		std::cerr << "CUDA Propagation: Critical error, unknown method!" << std::endl;
+		std::exit(0);
+	}
+}
+
+auto CUDAPropagation::laplace(float* in, float* out, const ComputingData& data, const Device device) -> void
+{
 	switch (device)
 	{
-	case Device::GPU:
-		propagate_gpu(in, out, data, method);
-		break;
 	case Device::CPU:
-		propagate_cpu(data, method);
-		break;
-	default:
-		std::cerr << "CUDA Propagation: Critical error, unknown device!" << std::endl;
-		std::exit(0);
-	}
-}
-
-auto CUDAPropagation::propagate_cpu(const ComputingData& data, const Method method) -> void
-{
-	switch (method)
-	{
-	case Method::Laplace:
 		laplace_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
-	case Method::FTCS:
-		ftcs_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
-		break;
-	case Method::FIS:
-		fis_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
-		break;
-	default:
-		std::cerr << "CUDA Propagation: Critical error, unknown method!" << std::endl;
-		std::exit(0);
+	case Device::GPU:
+		laplace_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
 	}
 }
 
-auto CUDAPropagation::propagate_gpu(float* in, float* out, const ComputingData& data, const Method method) -> void
+auto CUDAPropagation::ftcs(float* in, float* out, const ComputingData& data, const Device device) -> void
 {
-	switch (method)
+	switch (device)
 	{
-	case Method::Laplace:
-		laplace_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
+	case Device::CPU:
+		ftcs_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
-	case Method::FTCS:
+	case Device::GPU:
 		ftcs_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
-		break;
-	case Method::FIS:
-		fis_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
-		break;
-	default:
-		std::cerr << "CUDA Propagation: Critical error, unknown method!" << std::endl;
-		std::exit(0);
 	}
 }
+
+auto CUDAPropagation::fis(float* in, float* out, const ComputingData& data, const Device device) -> void
+{
+	switch (device)
+	{
+	case Device::CPU:
+		fis_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
+		break;
+	case Device::GPU:
+		fis_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
+	}
+}
+
 
 __global__ void kernel_laplace(float* data, float* out_data, const int x_axis_bound, const int y_axis_bound)
 {
@@ -136,14 +138,24 @@ auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis
 	vec = out_vec;
 }
 
+auto CUDAPropagation::laplace_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
+	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
+{
+	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
+
+	dim3 block(32, 32);
+	dim3 grid(x_axis_bound / block.x, y_axis_bound / block.y);
+
+	kernel_laplace << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound);
+
+	VALID(cudaMemcpyAsync(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
+}
+
 auto CUDAPropagation::ftcs_cpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound) -> void
 {
 	std::vector<float> out_vec(vec.capacity());
 
-	const float dx = 1.f;
-	const float dt = 1.f / 60.f;
-	const float alpha = 0.f;
-	const float r = (alpha * dt) / (dx * dx);
+	const float r = (Config::FTCS_Params::alpha * Config::FTCS_Params::dt) / (Config::FTCS_Params::dx * Config::FTCS_Params::dx);
 	const float r2 = 1 - 2 * r;
 
 	for (auto i = 1u; i < y_axis_bound - 1; ++i)
@@ -163,19 +175,31 @@ auto CUDAPropagation::ftcs_cpu(std::vector<float>& vec, const uint32_t x_axis_bo
 	vec = out_vec;
 }
 
+auto CUDAPropagation::ftcs_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
+	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
+{
+	const float r = (Config::FTCS_Params::alpha * Config::FTCS_Params::dt) / (Config::FTCS_Params::dx * Config::FTCS_Params::dx);
+	const float r2 = 1 - 2 * r;
+
+	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
+
+	dim3 block(32, 32);
+	dim3 grid(x_axis_bound / block.x, y_axis_bound / block.y);
+
+	kernel_ftcs << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound, r, r2);
+
+	VALID(cudaMemcpyAsync(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
+}
+
 auto CUDAPropagation::fis_cpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound) -> void
 {
 	std::vector<float> out_vec(vec.capacity());
 
-	float dt = 1.f / 60.f;
-	float dx = 1.f;
-	float dy = 1.f;
-	float K = 23700000.f;
-	float cw = 900.f;
-	float p = 2700.f;
+	float x_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
+		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dx * Config::FIS_Params::dx));
 
-	float x_param = ((K * dt) / (cw * p * dx * dx));
-	float y_param = ((K * dt) / (cw * p * dy * dy));
+	float y_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
+		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dy * Config::FIS_Params::dy));
 
 	for (auto i = 1u; i < y_axis_bound - 1; ++i)
 	{
@@ -196,50 +220,14 @@ auto CUDAPropagation::fis_cpu(std::vector<float>& vec, const uint32_t x_axis_bou
 	vec = out_vec;
 }
 
-auto CUDAPropagation::laplace_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
-	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
-{
-	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
-
-	dim3 block(32, 32);
-	dim3 grid(x_axis_bound / block.x, y_axis_bound / block.y);
-
-	kernel_laplace << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound);
-
-	VALID(cudaMemcpyAsync(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
-}
-
-auto CUDAPropagation::ftcs_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
-	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
-{
-	const float dx = 1.f;
-	const float dt = 1.f / 60.f;
-	const float alpha = 0.f;
-	const float r = (alpha * dt) / (dx * dx);
-	const float r2 = 1 - 2 * r;
-
-	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
-
-	dim3 block(32, 32);
-	dim3 grid(x_axis_bound / block.x, y_axis_bound / block.y);
-
-	kernel_ftcs << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound, r, r2);
-
-	VALID(cudaMemcpyAsync(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
-}
-
 auto CUDAPropagation::fis_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
 	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
 {
-	float dt = 1.f / 60.f;
-	float dx = 1.f;
-	float dy = 1.f;
-	float K = 23700000.f;
-	float cw = 900.f;
-	float p = 2700.f;
+	float x_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
+		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dx * Config::FIS_Params::dx));
 
-	float x_param = ((K * dt) / (cw * p * dx * dx));
-	float y_param = ((K * dt) / (cw * p * dy * dy));
+	float y_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
+		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dy * Config::FIS_Params::dy));
 
 	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 

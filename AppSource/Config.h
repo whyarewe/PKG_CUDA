@@ -34,4 +34,21 @@ namespace Config
 		static unsigned short const minimal_entity_radius = 1;
 		static unsigned short const maximal_entity_radius = 21;
 	}
+
+	namespace FTCS_Params
+	{
+		static float dx = 1.f;
+		static float dt = 1.f / 60.f;
+		static float alpha = 0.f;
+	}
+
+	namespace FIS_Params
+	{
+		static float dx = 1.f;
+		static float dy = 1.f;
+		static float dt = 1.f / 60.f;
+		static float K = 23700000.f;
+		static float sh = 900.f;
+		static float density = 2700.f;
+	}
 }
