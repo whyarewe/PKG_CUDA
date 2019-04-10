@@ -27,5 +27,7 @@ namespace CoreUtils
 		virtual auto setHeatersCount(size_t) -> void = 0;
 		virtual auto display(sf::RenderWindow&) -> void = 0;
 		virtual auto setFontConfiguration(const sf::Font&) const -> void = 0;
+		virtual auto getDeviceName() -> std::string = 0;
+		virtual auto getMethodName()->std::string = 0;
 	};
 }

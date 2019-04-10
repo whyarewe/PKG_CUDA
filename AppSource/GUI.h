@@ -9,6 +9,7 @@
 
 #include "Config.h"
 #include "IGUI.h"
+#include <string>
 
 namespace CoreUtils
 {
@@ -32,5 +33,7 @@ namespace CoreUtils
 		auto display(sf::RenderWindow&) -> void override;
 		auto setHeatersCount(size_t) -> void override;
 		auto setFontConfiguration(const sf::Font&) const -> void override;
+		auto getDeviceName()->std::string override;
+		auto getMethodName()->std::string override;
 	};
 }
