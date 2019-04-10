@@ -155,7 +155,7 @@ auto CUDAPropagation::ftcs_cpu(std::vector<float>& vec, const uint32_t x_axis_bo
 {
 	std::vector<float> out_vec(vec.capacity());
 
-	const float r = (Config::FTCS_Params::alpha * Config::FTCS_Params::dt) / (Config::FTCS_Params::dx * Config::FTCS_Params::dx);
+	const float r = (Config::FTCS_Config::alpha * Config::FTCS_Config::dt) / (Config::FTCS_Config::dx * Config::FTCS_Config::dx);
 	const float r2 = 1 - 2 * r;
 
 	for (auto i = 1u; i < y_axis_bound - 1; ++i)
@@ -178,7 +178,7 @@ auto CUDAPropagation::ftcs_cpu(std::vector<float>& vec, const uint32_t x_axis_bo
 auto CUDAPropagation::ftcs_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
 	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
 {
-	const float r = (Config::FTCS_Params::alpha * Config::FTCS_Params::dt) / (Config::FTCS_Params::dx * Config::FTCS_Params::dx);
+	const float r = (Config::FTCS_Config::alpha * Config::FTCS_Config::dt) / (Config::FTCS_Config::dx * Config::FTCS_Config::dx);
 	const float r2 = 1 - 2 * r;
 
 	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
@@ -195,11 +195,11 @@ auto CUDAPropagation::fis_cpu(std::vector<float>& vec, const uint32_t x_axis_bou
 {
 	std::vector<float> out_vec(vec.capacity());
 
-	float x_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
-		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dx * Config::FIS_Params::dx));
+	float x_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
+		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dx * Config::FIS_Config::dx));
 
-	float y_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
-		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dy * Config::FIS_Params::dy));
+	float y_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
+		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dy * Config::FIS_Config::dy));
 
 	for (auto i = 1u; i < y_axis_bound - 1; ++i)
 	{
@@ -223,11 +223,11 @@ auto CUDAPropagation::fis_cpu(std::vector<float>& vec, const uint32_t x_axis_bou
 auto CUDAPropagation::fis_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
 	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
 {
-	float x_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
-		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dx * Config::FIS_Params::dx));
+	float x_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
+		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dx * Config::FIS_Config::dx));
 
-	float y_param = ((Config::FIS_Params::K * Config::FIS_Params::dt) /
-		(Config::FIS_Params::sh * Config::FIS_Params::density * Config::FIS_Params::dy * Config::FIS_Params::dy));
+	float y_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
+		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dy * Config::FIS_Config::dy));
 
 	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 
