@@ -9,7 +9,7 @@
 #include "GUI.h"
 #include "Color.h"
 #include "Config.h"
-#include "CUDALaplacePropagation.h"
+#include "CUDAPropagation.h"
 
 namespace CoreUtils
 {

@@ -9,7 +9,7 @@
 #include "EntityManager.h"
 #include "LevelManager.h"
 #include "EventHandler.h"
-#include "CUDALaplacePropagation.h"
+#include "CUDAPropagation.h"
 
 
 CoreUtils::Engine::Engine() :
@@ -24,8 +24,8 @@ CoreUtils::Engine::Engine() :
 	{
 		std::exit(0);
 	}
-	level_manager_ = std::make_unique<LevelManager>(Config::FullHDResolution::width, Config::FullHDResolution::height);
-	window_ = std::make_unique<Window>(WindowStyles::FullScreen, *system_font_);
+	level_manager_ = std::make_unique<LevelManager>(Config::StandardResolution::width, Config::StandardResolution::height);
+	window_ = std::make_unique<Window>(WindowStyles::NonResizable, *system_font_);
 }
 
 auto CoreUtils::Engine::run() const -> void
@@ -40,7 +40,6 @@ auto CoreUtils::Engine::run() const -> void
 
 	cudaMalloc((void**)&data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
 	cudaMalloc((void**)&out_data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
-	cudaMallocHost((void**)&host_data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
 
 	while (window_->isOpen())
 	{
@@ -56,7 +55,10 @@ auto CoreUtils::Engine::run() const -> void
 		};
 
 		auto start = std::chrono::system_clock::now();
-		CUDAHelpers::CUDAPropagation::laplace(data, out_data, host_data, board_context, CUDAHelpers::CUDAPropagation::Device::GPU);
+
+		CUDAHelpers::CUDAPropagation::propagate(data, out_data, board_context,
+			CUDAHelpers::CUDAPropagation::Device::GPU, CUDAHelpers::CUDAPropagation::Method::FTCS);
+
 		auto stop = std::chrono::system_clock::now();
 
 		std::chrono::duration<double> time_elapsed = stop - start;
