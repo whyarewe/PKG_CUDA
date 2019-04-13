@@ -35,9 +35,11 @@ CoreUtils::Window::Window(WindowStyles style, const sf::Font& font) :
 		static_cast<uint32_t>(style), settings_);
 	window_->setFramerateLimit(Config::StandardWindowSetting::frame_rate_limit);
 
+	system_font_ = font;
 	gui_ = std::make_unique<GUI>(*window_, font);
 
-	for (float f =  0.f; f < 251; f += 0.1f) {
+
+	for (auto f =  0.f; f < 251; f += 0.1f) {
 		r_tab_.push_back(static_cast<sf::Uint8>(R(f)));
 		g_tab_.push_back(static_cast<sf::Uint8>(G(f)));
 		b_tab_.push_back(static_cast<sf::Uint8>(B(f)));
@@ -80,8 +82,11 @@ auto CoreUtils::Window::setStyle(const WindowStyles new_style) -> void
 {
 	if (window_->isOpen())
 	{
+		needs_reload_ = true;
+		using namespace std::chrono_literals;
+		std::this_thread::sleep_for(50ms);
+		window_->setActive(true);
 		window_->close();
-
 		if (WindowStyles::Resizable == new_style || WindowStyles::NonResizable == new_style)
 		{
 			window_->create(sf::VideoMode(Config::StandardResolution::width, Config::StandardResolution::height),
@@ -92,6 +97,13 @@ auto CoreUtils::Window::setStyle(const WindowStyles new_style) -> void
 			window_->create(sf::VideoMode(Config::FullHDResolution::width, Config::FullHDResolution::height),
 			                Config::project_name, static_cast<uint32_t>(new_style), settings_);
 		}
+
+		window_style_ = new_style;
+		settings_ = sf::ContextSettings();
+		settings_.antialiasingLevel = Config::StandardWindowSetting::anti_aliasing_level;
+		window_->setFramerateLimit(Config::StandardWindowSetting::frame_rate_limit);
+		needs_reload_ = false;
+		gui_.reset(new GUI(*window_, system_font_));
 	}
 }
 
@@ -143,8 +155,11 @@ auto CoreUtils::Window::generateView(const ILevelManager& level_manager, const I
 			gui_->display(*window_);
 			display();
 		}
-		running_view_ = false;
+		window_->setActive(false);
+		running_view_ = false;		
 	});
+
+
 }
 
 auto CoreUtils::Window::constructImageFromVector(std::vector<Color>& texture_data,

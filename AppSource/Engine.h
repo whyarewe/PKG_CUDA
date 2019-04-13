@@ -13,17 +13,17 @@ namespace CoreUtils
 {
 	class Engine
 	{
-	private:
-		static auto getExePath() -> std::string;
+	public:
+		Engine();
+		~Engine();
+		auto run() -> void;
+		auto reload() -> void;
+		static auto getExePath()->std::string;
+		
 		std::unique_ptr<IWindow> window_;
 		std::unique_ptr<sf::Font> system_font_;
 		std::unique_ptr<IEventHandler> event_handler_;
 		std::unique_ptr<ILevelManager> level_manager_;
 		std::unique_ptr<IEntityManager> entity_manager_;
-
-	public:
-		auto run() const -> void;
-		Engine();
-		~Engine();
 	};
 }

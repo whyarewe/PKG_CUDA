@@ -10,6 +10,7 @@
 #include "LevelManager.h"
 #include "EventHandler.h"
 #include "CUDAPropagation.h"
+#include "CUDAUtils.h"
 
 
 CoreUtils::Engine::Engine() :
@@ -28,22 +29,22 @@ CoreUtils::Engine::Engine() :
 	window_ = std::make_unique<Window>(WindowStyles::NonResizable, *system_font_);
 }
 
-auto CoreUtils::Engine::run() const -> void
+auto CoreUtils::Engine::run() -> void
 {
 	window_->setActive(false);
 	std::vector<double> times;
-	auto output_time = false;
+	auto debug = false;
 
 	float* data = nullptr;
 	float* out_data = nullptr;
 	float* host_data = nullptr;
 
-	cudaMalloc((void**)&data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
-	cudaMalloc((void**)&out_data, level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float));
+	CUDAHelpers::VALID(cudaMalloc(reinterpret_cast<void**>(&data), level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float)));
+	CUDAHelpers::VALID(cudaMalloc(reinterpret_cast<void**>(&out_data), level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float)));
 
 	while (window_->isOpen())
 	{
-		event_handler_->intercept(*window_, *entity_manager_, *level_manager_, &output_time);
+		event_handler_->intercept(*this, &debug);
 		level_manager_->update(*entity_manager_);
 
 		CUDAHelpers::ComputingData board_context{
@@ -64,9 +65,9 @@ auto CoreUtils::Engine::run() const -> void
 		std::chrono::duration<double> time_elapsed = stop - start;
 		times.push_back(time_elapsed.count());
 
-		if (output_time)
+		if (debug)
 		{
-			output_time = false;
+			debug = false;
 			std::cout << times.back() << std::endl;
 		}
 
@@ -78,9 +79,17 @@ auto CoreUtils::Engine::run() const -> void
 		window_->generateView(*level_manager_, *entity_manager_);
 	}
 
-	cudaFree(data);
-	cudaFree(out_data);
-	cudaFree(host_data);
+	CUDAHelpers::VALID(cudaFree(data));
+	CUDAHelpers::VALID(cudaFree(out_data));
+	CUDAHelpers::VALID(cudaFree(host_data));
+	CUDAHelpers::VALID(cudaFree(host_data));
+}
+
+auto CoreUtils::Engine::reload() -> void
+{
+	level_manager_.reset(new LevelManager(window_->getWidth(), window_->getHeight()));
+	entity_manager_.reset(new EntityManager());
+	run();
 }
 
 auto CoreUtils::Engine::getExePath() -> std::string

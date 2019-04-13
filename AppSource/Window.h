@@ -17,7 +17,9 @@ namespace CoreUtils
 	private:
 		std::thread view_;
 
+		sf::Font system_font_;
 		WindowStyles window_style_;
+
 		std::unique_ptr<IGUI> gui_;
 		sf::ContextSettings settings_;
 		std::unique_ptr<sf::RenderWindow> window_;
