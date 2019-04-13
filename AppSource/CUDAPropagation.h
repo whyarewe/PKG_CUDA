@@ -22,20 +22,26 @@ namespace CUDAHelpers
 
 		enum class Method { Laplace, FTCS, FIS };
 
-		static void propagate(float* in, float* out, const ComputingData&, const Device device, const Method method);
+		CUDAPropagation(uint32_t, uint32_t);
+		~CUDAPropagation();
+
+		void propagate(const ComputingData&, const Device device, const Method method);
 
 	private:
-		static auto laplace(float* in, float* out, const ComputingData& data, const Device device) -> void;
-		static auto ftcs(float* in, float* out, const ComputingData& data, const Device device) -> void;
-		static auto fis(float* in, float* out, const ComputingData& data, const Device device) -> void;
+		float* data;
+		float* out_data;
 
-		static auto laplace_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
-		static auto laplace_gpu(float*, float*, const uint32_t, const uint32_t, std::vector<float>&) -> void;
+		auto laplace(const ComputingData& data, const Device device) -> void;
+		auto ftcs(const ComputingData& data, const Device device) -> void;
+		auto fis(const ComputingData& data, const Device device) -> void;
 
-		static auto ftcs_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
-		static auto ftcs_gpu(float*, float*, const uint32_t, const uint32_t, std::vector<float>&) -> void;
+		auto laplace_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
+		auto laplace_gpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 
-		static auto fis_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
-		static auto fis_gpu(float*, float*, const uint32_t, const uint32_t, std::vector<float>&) -> void;
+		auto ftcs_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
+		auto ftcs_gpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
+
+		auto fis_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
+		auto fis_gpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 	};
 }

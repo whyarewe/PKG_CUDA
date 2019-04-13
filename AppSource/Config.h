@@ -38,7 +38,7 @@ namespace Config
 
 	namespace Engine_Config
 	{
-		static auto device = CUDAHelpers::CUDAPropagation::Device::GPU;
+		static auto device = CUDAHelpers::CUDAPropagation::Device::CPU;
 		static auto method = CUDAHelpers::CUDAPropagation::Method::Laplace;
 	}
 
