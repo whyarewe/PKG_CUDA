@@ -36,6 +36,12 @@ CoreUtils::Window::Window(WindowStyles style, const sf::Font& font) :
 	window_->setFramerateLimit(Config::StandardWindowSetting::frame_rate_limit);
 
 	gui_ = std::make_unique<GUI>(*window_, font);
+
+	for (float f =  0.f; f < 251; f += 0.1f) {
+		r_tab_.push_back(static_cast<sf::Uint8>(R(f)));
+		g_tab_.push_back(static_cast<sf::Uint8>(G(f)));
+		b_tab_.push_back(static_cast<sf::Uint8>(B(f)));
+	}
 }
 
 CoreUtils::Window::~Window()
@@ -158,9 +164,9 @@ auto CoreUtils::Window::constructImageFromVector(std::vector<Color>& texture_dat
 			else
 			{
 				texture_data.at(current_index) = {
-					static_cast<sf::Uint8>(R(point_value)),
-					static_cast<sf::Uint8>(G(point_value)),
-					static_cast<sf::Uint8>(B(point_value)),
+					r_tab_[static_cast<int>(point_value * 10)],
+					g_tab_[static_cast<int>(point_value * 10)],
+					b_tab_[static_cast<int>(point_value * 10)],
 					255
 				};
 			}

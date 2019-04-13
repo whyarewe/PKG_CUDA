@@ -26,6 +26,10 @@ namespace CoreUtils
 		std::atomic<bool> needs_reload_{false};
 		std::atomic<bool> update_interface_{false};
 
+		std::vector<sf::Uint8> r_tab_;
+		std::vector<sf::Uint8> g_tab_;
+		std::vector<sf::Uint8> b_tab_;
+
 	public:
 		explicit Window(WindowStyles, const sf::Font&);
 		auto close() -> void override;
