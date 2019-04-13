@@ -84,12 +84,12 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="CUDALaplacePropagation.cu" />
+    <CudaCompile Include="CUDAPropagation.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="CUDALaplacePropagation.h" />
+    <ClInclude Include="CUDAPropagation.h" />
     <ClInclude Include="CUDASystemInformation.h" />
     <ClInclude Include="CUDAUtils.h" />
     <ClInclude Include="Engine.h" />

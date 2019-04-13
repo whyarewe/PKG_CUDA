@@ -13,11 +13,16 @@ CoreUtils::GUI::GUI(const sf::RenderWindow& window, const sf::Font& font) :
 
 	radius_text_->move(static_cast<float>(window.getSize().x - 110), 30.f);
 	heaters_count_text_->move(static_cast<float>(window.getSize().x - 110), 10.f);
+	info_text_->move(5.f, 10.f);
 	key_bindings_text_->move(5.f, 10.f);
 
-	std::string info_string("Press 'i' to toggle controls\n");
+	std::string info_string("Press 'i' to toggle info\n");
 	info_text_->setString(info_string.c_str());
-	std::string key_bindings_string("LMB : Spawn heater\n"
+
+	std::string key_bindings_string("Device: " + getDeviceName() + "\n"
+		"Method: " + getMethodName() + "\n"
+		"\n"
+		"LMB : Spawn heater\n"
 		"RMB : Draw heaters\n"
 		"Backspace : Delete heater\n"
 		"Key Up : Increase radius\n"
@@ -87,4 +92,32 @@ auto CoreUtils::GUI::display(sf::RenderWindow& window) -> void
 
 	window.draw(*heaters_count_text_);
 	window.draw(*radius_text_);
+}
+
+auto CoreUtils::GUI::getDeviceName() -> std::string
+{
+	switch (Config::Engine_Config::device)
+	{
+	case CUDAHelpers::CUDAPropagation::Device::GPU:
+		return "GPU";
+	case CUDAHelpers::CUDAPropagation::Device::CPU:
+		return "CPU";
+	default:
+		return "Unknown device";
+	}
+}
+
+auto CoreUtils::GUI::getMethodName() -> std::string
+{
+	switch (Config::Engine_Config::method)
+	{
+	case CUDAHelpers::CUDAPropagation::Method::Laplace:
+		return "Laplace";
+	case CUDAHelpers::CUDAPropagation::Method::FTCS:
+		return "FTCS";
+	case CUDAHelpers::CUDAPropagation::Method::FIS:
+		return "FIS";
+	default:
+		return "Unknown method";
+	}
 }

@@ -30,9 +30,6 @@
     <ClInclude Include="IEventHandler.h">
       <Filter>headers\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="CUDALaplacePropagation.h">
-      <Filter>headers\CUDA Calculations</Filter>
-    </ClInclude>
     <ClInclude Include="CUDASystemInformation.h">
       <Filter>headers\CUDA Calculations</Filter>
     </ClInclude>
@@ -69,6 +66,9 @@
     <ClInclude Include="Color.h">
       <Filter>headers\Core</Filter>
     </ClInclude>
+    <ClInclude Include="CUDAPropagation.h">
+      <Filter>headers\CUDA Calculations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CUDASystemInformation.cpp">
@@ -100,7 +100,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="CUDALaplacePropagation.cu">
+    <CudaCompile Include="CUDAPropagation.cu">
       <Filter>source</Filter>
     </CudaCompile>
   </ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "CUDAPropagation.h"
 
 namespace Config
 {
@@ -33,5 +34,28 @@ namespace Config
 		static unsigned short const default_entity_radius = 1;
 		static unsigned short const minimal_entity_radius = 1;
 		static unsigned short const maximal_entity_radius = 21;
+	}
+
+	namespace Engine_Config
+	{
+		static auto device = CUDAHelpers::CUDAPropagation::Device::GPU;
+		static auto method = CUDAHelpers::CUDAPropagation::Method::FIS;
+	}
+
+	namespace FTCS_Config
+	{
+		static float dx = 1.f;
+		static float dt = 1.f / 60.f;
+		static float alpha = 0.f;
+	}
+
+	namespace FIS_Config
+	{
+		static float dx = 1.f;
+		static float dy = 1.f;
+		static float dt = 1.f / 60.f;
+		static float K = 23700000.f;
+		static float sh = 900.f;
+		static float density = 2700.f;
 	}
 }
