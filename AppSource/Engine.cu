@@ -82,7 +82,6 @@ auto CoreUtils::Engine::run() -> void
 	CUDAHelpers::VALID(cudaFree(data));
 	CUDAHelpers::VALID(cudaFree(out_data));
 	CUDAHelpers::VALID(cudaFree(host_data));
-	CUDAHelpers::VALID(cudaFree(host_data));
 }
 
 auto CoreUtils::Engine::reload() -> void
