@@ -23,6 +23,7 @@ namespace CUDAHelpers
 		enum class Method { Laplace, FTCS, FIS };
 
 		CUDAPropagation(uint32_t, uint32_t);
+		~CUDAPropagation();
 
 		void propagate(const ComputingData&, const Device device, const Method method);
 

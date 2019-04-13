@@ -15,6 +15,12 @@ CUDAPropagation::CUDAPropagation(uint32_t x_axis_bound, uint32_t y_axis_bound)
 	VALID(cudaMalloc(reinterpret_cast<void**>(&out_data), x_axis_bound * y_axis_bound * sizeof(float)));
 }
 
+CUDAPropagation::~CUDAPropagation()
+{
+	cudaFree(data);
+	cudaFree(out_data);
+}
+
 auto CUDAPropagation::propagate(const ComputingData& data, const Device device, const Method method) -> void
 {
 	switch (method)
