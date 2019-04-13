@@ -1,38 +1,40 @@
 #include "EventHandler.h"
 #include "ILevelManager.h"
+#include "LevelManager.h"
+#include "Engine.h"
+#include "EntityManager.h"
+#include <thread>
 
 CoreUtils::EventHandler::EventHandler() = default;
 
 CoreUtils::EventHandler::~EventHandler() = default;
 
-auto CoreUtils::EventHandler::intercept(IWindow& window, IEntityManager& entity_manager, ILevelManager& level_manager,
-                                        bool* output) -> void
+auto CoreUtils::EventHandler::intercept(Engine& engine, bool* output) -> void
 {
-	handleInterrupts(window, entity_manager, level_manager, output)
-		.handleControls(window, entity_manager, level_manager);
+	handleInterrupts(engine, output)
+		.handleControls(*engine.window_, *engine.entity_manager_, *engine.level_manager_);
 }
 
-auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& entity_manager,
-                                               ILevelManager& level_manager, bool* output) -> EventHandler&
+auto CoreUtils::EventHandler::handleInterrupts(Engine& engine, bool* debug) -> EventHandler&
 {
 	sf::Event event{};
-	while (window.pollEvent(event))
+	while (engine.window_->pollEvent(event))
 	{
 		if (event.type == sf::Event::Closed)
 		{
-			window.close();
+			engine.window_->close();
 		}
 		else if (event.type == sf::Event::MouseButtonPressed)
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				const auto mouse_position = window.getMousePosition();
+				const auto mouse_position = engine.window_->getMousePosition();
 
-				if (window.isWithinWindow(mouse_position))
+				if (engine.window_->isWithinWindow(mouse_position))
 				{
-					entity_manager.spawn(mouse_position, level_manager.getXAxisLength(),
-					                     level_manager.getYAxisLength());
-					*output = true;
+					engine.entity_manager_->spawn(mouse_position, engine.level_manager_->getXAxisLength(),
+					                              engine.level_manager_->getYAxisLength());
+					*debug = true;
 				}
 			}
 		}
@@ -41,30 +43,30 @@ auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& 
 			switch (event.key.code)
 			{
 			case sf::Keyboard::Up:
-				entity_manager.increaseRadius();
+				engine.entity_manager_->increaseRadius();
 				break;
 			case sf::Keyboard::Down:
-				entity_manager.decreaseRadius();
+				engine.entity_manager_->decreaseRadius();
 				break;
 			case sf::Keyboard::BackSpace:
-				entity_manager.killFirst();
+				engine.entity_manager_->killFirst();
 				break;
 			case sf::Keyboard::F11:
-				switch (window.getStyle())
+				switch (engine.window_->getStyle())
 				{
 				case WindowStyles::Resizable:
 				case WindowStyles::NonResizable:
-					window.setStyle(WindowStyles::FullScreen);
-					window.reloadWindow();
+					engine.window_->setStyle(WindowStyles::FullScreen);
+					engine.reload();
 					break;
 				case WindowStyles::FullScreen:
-					window.setStyle(WindowStyles::NonResizable);
-					window.reloadWindow();
+					engine.window_->setStyle(WindowStyles::NonResizable);
+					engine.reload();
 					break;
 				}
 				break;
 			case sf::Keyboard::I:
-				window.toggleControls();
+				engine.window_->toggleControls();
 				break;
 			case sf::Keyboard::Unknown: break;
 			case sf::Keyboard::A: break;
@@ -102,7 +104,13 @@ auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& 
 			case sf::Keyboard::Num7: break;
 			case sf::Keyboard::Num8: break;
 			case sf::Keyboard::Num9: break;
-			case sf::Keyboard::Escape: break;
+			case sf::Keyboard::Escape:
+				engine.window_->reloadWindow();
+				using namespace std::chrono_literals;
+				std::this_thread::sleep_for(50ms);
+				engine.window_->setActive(true);
+				engine.window_->close();
+				break;
 			case sf::Keyboard::LControl: break;
 			case sf::Keyboard::LShift: break;
 			case sf::Keyboard::LAlt: break;
@@ -168,7 +176,7 @@ auto CoreUtils::EventHandler::handleInterrupts(IWindow& window, IEntityManager& 
 				break;
 			}
 		}
-		window.updateInterface();
+		engine.window_->updateInterface();
 	}
 
 	return *this;

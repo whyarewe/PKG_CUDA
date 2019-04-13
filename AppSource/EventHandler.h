@@ -3,6 +3,7 @@
 #include "IEventHandler.h"
 #include "ILevelManager.h"
 #include "IEntityManager.h"
+#include "Engine.h"
 
 namespace CoreUtils
 {
@@ -10,12 +11,12 @@ namespace CoreUtils
 		public IEventHandler
 	{
 	private:
-		auto handleInterrupts(IWindow&, IEntityManager&, ILevelManager&, bool*) -> EventHandler&;
-		auto handleControls(IWindow&, IEntityManager&, ILevelManager&) -> EventHandler&;
+		auto EventHandler::handleInterrupts(Engine& engine, bool* debug) -> EventHandler&;
 
+		auto handleControls(IWindow&, IEntityManager&, ILevelManager&) -> EventHandler&;
 	public:
 		EventHandler();
 		~EventHandler();
-		auto intercept(IWindow&, IEntityManager&, ILevelManager&, bool*) -> void override;
+		auto intercept(Engine&, bool*) -> void override;
 	};
 }

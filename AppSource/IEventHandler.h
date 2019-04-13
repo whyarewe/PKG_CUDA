@@ -1,10 +1,9 @@
 #pragma once
-#include "IWindow.h"
-#include "IEntityManager.h"
-#include "ILevelManager.h"
 
 namespace CoreUtils
 {
+	class Engine;
+
 	class IEventHandler
 	{
 	public:
@@ -15,6 +14,6 @@ namespace CoreUtils
 		IEventHandler& operator=(const IEventHandler&) = delete;
 		IEventHandler& operator=(const IEventHandler&&) = delete;
 
-		virtual auto intercept(IWindow&, IEntityManager&, ILevelManager&, bool*) -> void = 0;
+		virtual auto intercept(Engine&, bool*) -> void = 0;
 	};
 }

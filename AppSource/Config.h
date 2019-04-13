@@ -39,7 +39,7 @@ namespace Config
 	namespace Engine_Config
 	{
 		static auto device = CUDAHelpers::CUDAPropagation::Device::GPU;
-		static auto method = CUDAHelpers::CUDAPropagation::Method::FIS;
+		static auto method = CUDAHelpers::CUDAPropagation::Method::Laplace;
 	}
 
 	namespace FTCS_Config
@@ -56,6 +56,6 @@ namespace Config
 		static float dt = 1.f / 60.f;
 		static float K = 23700000.f;
 		static float sh = 900.f;
-		static float density = 2700.f;
+		static float density = 4700.f;
 	}
 }
