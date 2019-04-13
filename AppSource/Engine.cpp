@@ -35,12 +35,7 @@ auto CoreUtils::Engine::run() -> void
 	std::vector<double> times;
 	auto debug = false;
 
-	float* data = nullptr;
-	float* out_data = nullptr;
-	float* host_data = nullptr;
-
-	CUDAHelpers::VALID(cudaMalloc(reinterpret_cast<void**>(&data), level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float)));
-	CUDAHelpers::VALID(cudaMalloc(reinterpret_cast<void**>(&out_data), level_manager_->getXAxisLength() * level_manager_->getYAxisLength() * sizeof(float)));
+	auto propagation = new CUDAHelpers::CUDAPropagation(level_manager_->getXAxisLength(), level_manager_->getYAxisLength());
 
 	while (window_->isOpen())
 	{
@@ -57,7 +52,7 @@ auto CoreUtils::Engine::run() -> void
 
 		auto start = std::chrono::system_clock::now();
 
-		CUDAHelpers::CUDAPropagation::propagate(data, out_data, board_context,
+		propagation->propagate(board_context,
 			Config::Engine_Config::device, Config::Engine_Config::method);
 
 		auto stop = std::chrono::system_clock::now();
@@ -78,10 +73,6 @@ auto CoreUtils::Engine::run() -> void
 
 		window_->generateView(*level_manager_, *entity_manager_);
 	}
-
-	CUDAHelpers::VALID(cudaFree(data));
-	CUDAHelpers::VALID(cudaFree(out_data));
-	CUDAHelpers::VALID(cudaFree(host_data));
 }
 
 auto CoreUtils::Engine::reload() -> void

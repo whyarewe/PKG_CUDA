@@ -6,18 +6,27 @@
 
 using namespace CUDAHelpers;
 
-auto CUDAPropagation::propagate(float* in, float* out, const ComputingData& data, const Device device, const Method method) -> void
+CUDAPropagation::CUDAPropagation(uint32_t x_axis_bound, uint32_t y_axis_bound)
+{
+	data = nullptr;
+	out_data = nullptr;
+
+	VALID(cudaMalloc(reinterpret_cast<void**>(&data), x_axis_bound * y_axis_bound * sizeof(float)));
+	VALID(cudaMalloc(reinterpret_cast<void**>(&out_data), x_axis_bound * y_axis_bound * sizeof(float)));
+}
+
+auto CUDAPropagation::propagate(const ComputingData& data, const Device device, const Method method) -> void
 {
 	switch (method)
 	{
 	case Method::Laplace:
-		laplace(in, out, data, device);
+		laplace(data, device);
 		break;
 	case Method::FTCS:
-		ftcs(in, out, data, device);
+		ftcs(data, device);
 		break;
 	case Method::FIS:
-		fis(in, out, data, device);
+		fis(data, device);
 		break;
 	default:
 		std::cerr << "CUDA Propagation: Critical error, unknown method!" << std::endl;
@@ -25,7 +34,7 @@ auto CUDAPropagation::propagate(float* in, float* out, const ComputingData& data
 	}
 }
 
-auto CUDAPropagation::laplace(float* in, float* out, const ComputingData& data, const Device device) -> void
+auto CUDAPropagation::laplace(const ComputingData& data, const Device device) -> void
 {
 	switch (device)
 	{
@@ -33,11 +42,11 @@ auto CUDAPropagation::laplace(float* in, float* out, const ComputingData& data, 
 		laplace_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
 	case Device::GPU:
-		laplace_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
+		laplace_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
 	}
 }
 
-auto CUDAPropagation::ftcs(float* in, float* out, const ComputingData& data, const Device device) -> void
+auto CUDAPropagation::ftcs(const ComputingData& data, const Device device) -> void
 {
 	switch (device)
 	{
@@ -45,11 +54,11 @@ auto CUDAPropagation::ftcs(float* in, float* out, const ComputingData& data, con
 		ftcs_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
 	case Device::GPU:
-		ftcs_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
+		ftcs_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
 	}
 }
 
-auto CUDAPropagation::fis(float* in, float* out, const ComputingData& data, const Device device) -> void
+auto CUDAPropagation::fis(const ComputingData& data, const Device device) -> void
 {
 	switch (device)
 	{
@@ -57,7 +66,7 @@ auto CUDAPropagation::fis(float* in, float* out, const ComputingData& data, cons
 		fis_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
 	case Device::GPU:
-		fis_gpu(in, out, data.x_axis_bound, data.y_axis_bound, data.board);
+		fis_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
 	}
 }
 
@@ -138,8 +147,8 @@ auto CUDAPropagation::laplace_cpu(std::vector<float>& vec, const uint32_t x_axis
 	vec = out_vec;
 }
 
-auto CUDAPropagation::laplace_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
-	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
+auto CUDAPropagation::laplace_gpu(std::vector<float>& vec, const uint32_t x_axis_bound,
+	const uint32_t y_axis_bound) -> void
 {
 	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 
@@ -175,8 +184,8 @@ auto CUDAPropagation::ftcs_cpu(std::vector<float>& vec, const uint32_t x_axis_bo
 	vec = out_vec;
 }
 
-auto CUDAPropagation::ftcs_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
-	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
+auto CUDAPropagation::ftcs_gpu(std::vector<float>& vec, const uint32_t x_axis_bound,
+	const uint32_t y_axis_bound) -> void
 {
 	const float r = (Config::FTCS_Config::alpha * Config::FTCS_Config::dt) / (Config::FTCS_Config::dx * Config::FTCS_Config::dx);
 	const float r2 = 1 - 2 * r;
@@ -220,8 +229,8 @@ auto CUDAPropagation::fis_cpu(std::vector<float>& vec, const uint32_t x_axis_bou
 	vec = out_vec;
 }
 
-auto CUDAPropagation::fis_gpu(float* data, float* out_data, const uint32_t x_axis_bound,
-	const uint32_t y_axis_bound, std::vector<float>& vec) -> void
+auto CUDAPropagation::fis_gpu(std::vector<float>& vec, const uint32_t x_axis_bound,
+	const uint32_t y_axis_bound) -> void
 {
 	float x_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
 		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dx * Config::FIS_Config::dx));

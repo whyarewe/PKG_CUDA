@@ -95,7 +95,7 @@
     <ClCompile Include="LevelManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cu">
+    <ClCompile Include="Engine.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
