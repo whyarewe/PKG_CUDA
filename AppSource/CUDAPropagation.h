@@ -20,7 +20,7 @@ namespace CUDAHelpers
 	public:
 		enum class Device { CPU, GPU };
 
-		enum class Method { Laplace, FTCS, FIS };
+		enum class Method { Laplace, FTCS, DHE };
 
 		CUDAPropagation(uint32_t, uint32_t);
 		~CUDAPropagation();

@@ -31,7 +31,7 @@ auto CUDAPropagation::propagate(const ComputingData& data, const Device device, 
 	case Method::FTCS:
 		ftcs(data, device);
 		break;
-	case Method::FIS:
+	case Method::DHE:
 		dhe(data, device);
 		break;
 	default:
