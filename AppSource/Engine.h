@@ -25,5 +25,6 @@ namespace CoreUtils
 		std::unique_ptr<IEventHandler> event_handler_;
 		std::unique_ptr<ILevelManager> level_manager_;
 		std::unique_ptr<IEntityManager> entity_manager_;
+		std::unique_ptr<CUDAHelpers::CUDAPropagation> propagation_;
 	};
 }
