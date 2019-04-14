@@ -27,7 +27,8 @@ CoreUtils::GUI::GUI(const sf::RenderWindow& window, const sf::Font& font) :
 		"Backspace : Delete heater\n"
 		"Key Up : Increase radius\n"
 		"Key Down : Decrease radius\n"
-		"F11 : Fullscreen mode");
+		"F11 : Fullscreen mode\n"
+		"Esc: Exit");
 	key_bindings_text_->setString(key_bindings_string.c_str());
 
 	auto heaters_count_string("Heater Count  : " + std::to_string(heaters_count_));

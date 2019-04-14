@@ -33,7 +33,7 @@ namespace CUDAHelpers
 
 		auto laplace(const ComputingData& data, const Device device) -> void;
 		auto ftcs(const ComputingData& data, const Device device) -> void;
-		auto fis(const ComputingData& data, const Device device) -> void;
+		auto dhe(const ComputingData& data, const Device device) -> void;
 
 		auto laplace_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 		auto laplace_gpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
@@ -41,7 +41,7 @@ namespace CUDAHelpers
 		auto ftcs_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 		auto ftcs_gpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 
-		auto fis_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
-		auto fis_gpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
+		auto dhe_cpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
+		auto dhe_gpu(std::vector<float>&, const uint32_t, const uint32_t) -> void;
 	};
 }

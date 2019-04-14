@@ -32,7 +32,7 @@ auto CUDAPropagation::propagate(const ComputingData& data, const Device device, 
 		ftcs(data, device);
 		break;
 	case Method::FIS:
-		fis(data, device);
+		dhe(data, device);
 		break;
 	default:
 		std::cerr << "CUDA Propagation: Critical error, unknown method!" << std::endl;
@@ -64,15 +64,15 @@ auto CUDAPropagation::ftcs(const ComputingData& data, const Device device) -> vo
 	}
 }
 
-auto CUDAPropagation::fis(const ComputingData& data, const Device device) -> void
+auto CUDAPropagation::dhe(const ComputingData& data, const Device device) -> void
 {
 	switch (device)
 	{
 	case Device::CPU:
-		fis_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
+		dhe_cpu(data.board, data.x_axis_bound, data.y_axis_bound);
 		break;
 	case Device::GPU:
-		fis_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
+		dhe_gpu(data.board, data.x_axis_bound, data.y_axis_bound);
 	}
 }
 
@@ -113,7 +113,7 @@ __global__ void kernel_ftcs(float* data, float* out_data, const int x_axis_bound
 	out_data[gid] = horizontal + diagonal;
 }
 
-__global__ void kernel_fis(float* data, float* out_data, const int x_axis_bound, const int y_axis_bound, const float x_param, const float y_param)
+__global__ void kernel_dhe(float* data, float* out_data, const int x_axis_bound, const int y_axis_bound, const float x_param, const float y_param)
 {
 	const uint16_t idx = blockIdx.x * blockDim.x + threadIdx.x;
 	const uint16_t idy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -206,15 +206,15 @@ auto CUDAPropagation::ftcs_gpu(std::vector<float>& vec, const uint32_t x_axis_bo
 	VALID(cudaMemcpyAsync(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
 }
 
-auto CUDAPropagation::fis_cpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound) -> void
+auto CUDAPropagation::dhe_cpu(std::vector<float>& vec, const uint32_t x_axis_bound, const uint32_t y_axis_bound) -> void
 {
 	std::vector<float> out_vec(vec.capacity());
 
-	float x_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
-		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dx * Config::FIS_Config::dx));
+	float x_param = ((Config::DHE_Config::K * Config::DHE_Config::dt) /
+		(Config::DHE_Config::sh * Config::DHE_Config::density * Config::DHE_Config::dx * Config::DHE_Config::dx));
 
-	float y_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
-		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dy * Config::FIS_Config::dy));
+	float y_param = ((Config::DHE_Config::K * Config::DHE_Config::dt) /
+		(Config::DHE_Config::sh * Config::DHE_Config::density * Config::DHE_Config::dy * Config::DHE_Config::dy));
 
 	for (auto i = 1u; i < y_axis_bound - 1; ++i)
 	{
@@ -235,21 +235,21 @@ auto CUDAPropagation::fis_cpu(std::vector<float>& vec, const uint32_t x_axis_bou
 	vec = out_vec;
 }
 
-auto CUDAPropagation::fis_gpu(std::vector<float>& vec, const uint32_t x_axis_bound,
+auto CUDAPropagation::dhe_gpu(std::vector<float>& vec, const uint32_t x_axis_bound,
 	const uint32_t y_axis_bound) -> void
 {
-	float x_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
-		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dx * Config::FIS_Config::dx));
+	float x_param = ((Config::DHE_Config::K * Config::DHE_Config::dt) /
+		(Config::DHE_Config::sh * Config::DHE_Config::density * Config::DHE_Config::dx * Config::DHE_Config::dx));
 
-	float y_param = ((Config::FIS_Config::K * Config::FIS_Config::dt) /
-		(Config::FIS_Config::sh * Config::FIS_Config::density * Config::FIS_Config::dy * Config::FIS_Config::dy));
+	float y_param = ((Config::DHE_Config::K * Config::DHE_Config::dt) /
+		(Config::DHE_Config::sh * Config::DHE_Config::density * Config::DHE_Config::dy * Config::DHE_Config::dy));
 
 	VALID(cudaMemcpyAsync(data, vec.data(), x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyHostToDevice));
 
 	dim3 block(32, 32);
 	dim3 grid(x_axis_bound / block.x, y_axis_bound / block.y);
 
-	kernel_fis << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound, x_param, y_param);
+	kernel_dhe << <grid, block >> > (data, out_data, x_axis_bound, y_axis_bound, x_param, y_param);
 
 	VALID(cudaMemcpyAsync(vec.data(), out_data, x_axis_bound * y_axis_bound * sizeof(float), cudaMemcpyDeviceToHost));
 }

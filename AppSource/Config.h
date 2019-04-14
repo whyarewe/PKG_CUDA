@@ -50,7 +50,7 @@ namespace Config
 		static float alpha = 0.f;
 	}
 
-	namespace FIS_Config
+	namespace DHE_Config
 	{
 		static float dx = 1.f;
 		static float dy = 1.f;
