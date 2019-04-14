@@ -27,6 +27,7 @@ CoreUtils::Engine::Engine() :
 	}
 	level_manager_ = std::make_unique<LevelManager>(Config::StandardResolution::width, Config::StandardResolution::height);
 	window_ = std::make_unique<Window>(WindowStyles::NonResizable, *system_font_);
+	propagation_ = std::make_unique<CUDAHelpers::CUDAPropagation>(level_manager_->getXAxisLength(), level_manager_->getYAxisLength());
 }
 
 auto CoreUtils::Engine::run() -> void
@@ -34,8 +35,6 @@ auto CoreUtils::Engine::run() -> void
 	window_->setActive(false);
 	std::vector<double> times;
 	auto debug = false;
-
-	auto propagation = new CUDAHelpers::CUDAPropagation(level_manager_->getXAxisLength(), level_manager_->getYAxisLength());
 
 	while (window_->isOpen())
 	{
@@ -52,7 +51,7 @@ auto CoreUtils::Engine::run() -> void
 
 		auto start = std::chrono::system_clock::now();
 
-		propagation->propagate(board_context,
+		propagation_->propagate(board_context,
 			Config::Engine_Config::device, Config::Engine_Config::method);
 
 		auto stop = std::chrono::system_clock::now();
@@ -79,6 +78,10 @@ auto CoreUtils::Engine::reload() -> void
 {
 	level_manager_.reset(new LevelManager(window_->getWidth(), window_->getHeight()));
 	entity_manager_.reset(new EntityManager());
+
+	propagation_.reset();
+	propagation_ = std::make_unique<CUDAHelpers::CUDAPropagation>(level_manager_->getXAxisLength(), level_manager_->getYAxisLength());
+
 	run();
 }
 

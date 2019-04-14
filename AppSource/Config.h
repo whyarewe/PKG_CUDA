@@ -27,6 +27,7 @@ namespace Config
 	namespace GUI_Config
 	{
 		static unsigned short const system_font_size = 12;
+
 	}
 
 	namespace Entity
@@ -38,7 +39,7 @@ namespace Config
 
 	namespace Engine_Config
 	{
-		static auto device = CUDAHelpers::CUDAPropagation::Device::CPU;
+		static auto device = CUDAHelpers::CUDAPropagation::Device::GPU;
 		static auto method = CUDAHelpers::CUDAPropagation::Method::Laplace;
 	}
 
